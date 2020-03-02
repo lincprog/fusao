@@ -1,10 +1,7 @@
-from flask import Flask
-from flask import jsonify
-from flask import request
+from flask import Flask, jsonify, request
 from bs4 import BeautifulSoup as bs
 import urllib
 import urllib.parse
-import asyncio
 import json
 import requests
 import consumidor
@@ -18,25 +15,27 @@ col_ra = fusao["reclameaqui"]
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def inicio():
     return pagina_inicial()
 
-@app.route("/analysis", methods = ['POST'])
+
+@app.route("/analysis", methods=['POST'])
 def analysis():
     if request.is_json:
         parameters = request.get_json()
         #CONSUMIDOR ~~~~~~~~~~~~~~~~~~~~~~~~
         print("Loading data from Consumidor.gov.br ...")
-        co=parameters["consumidor"]
-        results_co = json.loads(consumidor.crawl(co["nome"],co["dataInicio"],co["dataTermino"]))
+        co = parameters["consumidor"]
+        results_co = json.loads(consumidor.crawl(co["nome"], co["dataInicio"], co["dataTermino"]))
         #print(results_co)
         for r in results_co:
             col_co.update_one(r, {"$set": r}, upsert=True)
             #col_co.insert_one(r)
         #RECLAMEAQUI ~~~~~~~~~~~~~~~~~~~~~~~~
         print("Loading data from ReclameAQUI.com.br ...")
-        ra=parameters["reclameaqui"]
+        ra = parameters["reclameaqui"]
         results_ra = ReclameAqui.crawl(ra["id"], ra["qtdPaginas"], ra["qtdItens"], ra["nome"], ra["pular"])
         #print(results_ra)
         for r in results_ra:
@@ -47,7 +46,7 @@ def analysis():
     else:
         return jsonify({"success": False})
 
-@app.route("/name", methods = ['POST'])
+@app.route("/name", methods=['POST'])
 def name():
     if request.is_json:
         parameters = request.get_json()
@@ -83,6 +82,7 @@ def name():
         return jsonify(results)
     else:
         return jsonify({"success": False})
+
 
 app.run(debug=True, host='0.0.0.0')
 
