@@ -1,0 +1,39 @@
+version: '3'
+networks: 
+  frontend:
+  backend:
+volumes:
+  mongodbdata:
+services:
+  client:
+    image: node:10.15.1
+    volumes:
+      # Site
+      - ./cliente:/cliente
+    ports:
+      - 8080:8080
+    working_dir: /cliente
+    command: bash -c "cd /cliente && npm install && npm run dev"
+    networks:
+      - frontend
+  server:
+    build: .
+    volumes:
+      # Site
+      - ./server:/server
+    ports:
+      - 5000:5000
+    working_dir: /server
+    command: python server.py
+    networks:
+      - frontend
+      - backend
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodbuser
+      MONGO_INITDB_ROOT_PASSWORD: fusao!
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - backend
