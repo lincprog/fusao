@@ -15,9 +15,12 @@ As requisições podem ser feitas agora a [https://127.0.0.1](https://127.0.0.1)
 # Rotas configuradas:
 As seguintes rotas estão implementadas no servidor:
 ## /name
-A esta rota deverá ser enviada uma requisição ```POST``` contendo um ```JSON``` com o nome da empresa a buscar. Ex.:
+A esta rota deverá ser enviada uma requisição ```POST``` contendo um ```JSON``` com o nome da empresa a buscar e as plataformas a pesquisar. Ex.:
 ```json
-{ "name": "americanas"}
+{
+	"name": "americanas",
+	"platforms": ["consumidor", "reclameaqui"]
+}
 ```
 A resposta é um json contendo as empresas identificadas em cada plataforma:
 
