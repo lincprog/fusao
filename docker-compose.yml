@@ -1,0 +1,38 @@
+version: '3'
+networks: 
+  web:
+  db:
+volumes:
+  mongodbdata:
+services:
+  frontend:
+    container_name: fusao-frontend
+    build: './cliente/'
+    volumes:
+      - './cliente:/app'
+      - '/app/node_modules'
+    ports:
+      - '8080:8080'
+    networks:
+      - web
+  # server:
+  #   build: .
+  #   volumes:
+  #     # Site
+  #     - ./server:/server
+  #   ports:
+  #     - 5000:5000
+  #   working_dir: /server
+  #   command: python server.py
+  #   networks:
+  #     - frontend
+  #     - backend
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodbuser
+      MONGO_INITDB_ROOT_PASSWORD: fusao!
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - db
