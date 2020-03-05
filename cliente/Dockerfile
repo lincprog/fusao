@@ -13,4 +13,4 @@ RUN npm install
 RUN npm install @vue/cli@4.2.2 -g
 
 # start app
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]

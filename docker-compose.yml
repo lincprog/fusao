@@ -1,33 +1,32 @@
 version: '3'
 networks: 
-  frontend:
-  backend:
+  web:
+  db:
 volumes:
   mongodbdata:
 services:
-  client:
-    image: node:10.15.1
+  frontend:
+    container_name: fusao-frontend
+    build: './cliente/'
     volumes:
-      # Site
-      - ./cliente:/cliente
+      - './cliente:/app'
+      - '/app/node_modules'
     ports:
-      - 8080:8080
-    working_dir: /cliente
-    command: bash -c "cd /cliente && npm install && npm run dev"
+      - '8080:8080'
     networks:
-      - frontend
-  server:
-    build: .
-    volumes:
-      # Site
-      - ./server:/server
-    ports:
-      - 5000:5000
-    working_dir: /server
-    command: python server.py
-    networks:
-      - frontend
-      - backend
+      - web
+  # server:
+  #   build: .
+  #   volumes:
+  #     # Site
+  #     - ./server:/server
+  #   ports:
+  #     - 5000:5000
+  #   working_dir: /server
+  #   command: python server.py
+  #   networks:
+  #     - frontend
+  #     - backend
   db:
     image: mongo
     environment:
@@ -36,4 +35,4 @@ services:
     volumes:
       - mongodbdata:/data/db
     networks:
-      - backend
+      - db

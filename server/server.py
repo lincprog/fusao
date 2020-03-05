@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def inicio():
-    return pagina_inicial()
+    return "Bem vindo a API Fusao"
 
 
 @app.route("/analysis", methods=['POST'])
