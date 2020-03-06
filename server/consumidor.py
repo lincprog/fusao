@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 def crawl(fornecedor, dataInicio, dataTermino):
-    driver = webdriver.ChromeOptions()
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     driver = webdriver.Chrome('chromedriver.exe', options=options)

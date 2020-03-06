@@ -23,7 +23,12 @@ def inicio():
 
 @app.route("/analysis", methods=['POST'])
 def analysis():
-    if request.is_json:
+    try:
+        if not request.is_json:
+            raise Exception()
+    except:
+        return jsonify({"success": False, "status": "Bad Request"}), 400
+    try:
         parameters = request.get_json()
         
         if "consumidor" in parameters:
@@ -43,12 +48,19 @@ def analysis():
         #TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
         
         return jsonify({"success": True})
-    else:
-        return jsonify({"success": False})
+    except:
+        return jsonify({"success": False, "status": "Internal Server Error"}), 500
+
+        
 
 @app.route("/name", methods=['POST'])
 def name():
-    if request.is_json:
+    try:
+        if not request.is_json:
+            raise Exception()
+    except:
+        return jsonify({"success": False, "status": "Bad Request"}), 400
+    try:
         parameters = request.get_json()
         name = parameters["name"]
         platforms = parameters["platforms"]
@@ -62,7 +74,6 @@ def name():
                     co_results.remove(i)
             for i in co_results:
                 co_html = s.get('https://www.consumidor.gov.br/pages/empresa/'+i['value']+'/')
-                #print(co_html.text)
                 soup = bs(co_html.text, 'html.parser')
                 co_name = soup.find('div', {'class' :'tit-nome'}).text
                 i["name"] = co_name
@@ -88,9 +99,8 @@ def name():
         if "reclameaqui" in platforms:
             results["reclameaqui"] = ra_results["companies"]
         return jsonify(results)
-    
-    else:
-        return jsonify({"success": False})
+    except:
+        return jsonify({"success": False, "status": "Internal Server Error"}), 500
 
 
 app.run(debug=True, host='0.0.0.0')
