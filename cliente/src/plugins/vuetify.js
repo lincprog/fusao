@@ -8,6 +8,6 @@ export default new Vuetify({
     iconfont: 'mdi' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
   },
   theme: {
-    dark: true
+    dark: false
   }
 })

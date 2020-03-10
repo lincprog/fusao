@@ -27,9 +27,16 @@
     <v-app-bar
       app
       clipped-left
-      dense    >
+      dense>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ title + mode }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-home</v-icon>
+      </v-btn>
     </v-app-bar>
     <v-content>
       <v-container
@@ -40,7 +47,9 @@
           align="center"
           justify="center"
         >
+         <v-col cols="10">
           <router-view/>
+         </v-col>
         </v-row>
       </v-container>
     </v-content>
