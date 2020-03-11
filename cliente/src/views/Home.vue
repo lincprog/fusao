@@ -1,12 +1,9 @@
 <template>
-  <div>
-    <v-col cols="12">
-      <img alt="Vue logo" src="../assets/logo.png">
-    </v-col>
-    <v-col cols="12">
-      <h1 class="text-center">Fusao app</h1>
-    </v-col>
-  </div>
+  <v-col align="center">
+    <img alt="Vue logo" src="../assets/logo.png">
+    <h1 class="text-center">Fusao app</h1>
+    <v-btn to="empresa" color="primary">acessar</v-btn >
+  </v-col>
 </template>
 
 <script>
