@@ -4,6 +4,8 @@
       v-model="drawer"
       app
       clipped
+      color="primary"
+      dark
     >
       <v-list dense>
         <v-list-item link>
@@ -16,7 +18,7 @@
         </v-list-item>
         <v-list-item link>
           <v-list-item-action>
-            <v-icon>mdi-settings</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Configurações</v-list-item-title>
@@ -27,6 +29,8 @@
     <v-app-bar
       app
       clipped-left
+      color="primary"
+      dark
       dense>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ title + mode }}</v-toolbar-title>
@@ -53,7 +57,10 @@
         </v-row>
       </v-container>
     </v-content>
-    <v-footer app>
+    <v-footer
+      app
+      dark
+      color="primary">
       <span>&copy; 2019 - EngComp Uema</span>
     </v-footer>
   </v-app>
