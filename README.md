@@ -1,3 +1,9 @@
+# Stacks Utilizadas
+Flask 
+Python 3
+Vue Js
+MongoDB
+
 # Configuração
 
 Requisitos: [MongoDB](https://www.mongodb.com/) e [Python](https://www.python.org/).
