@@ -88,9 +88,26 @@ A esta rota deverá ser enviada uma requisição ```POST``` contendo um ```JSON`
 ```json
 {
 	"consumidor": {
+		"company": "Casas Bahia",
+		"query": {
+			"date":
+			{
+				"type":"day",
+				"day":"01/01/2019"
+			}
+		},
 		"fields": ["company", "data", "nota"]
 	},
 	"reclameaqui": {
+		"company": "casas-bahia-loja-online",
+		"query": {
+			"date":
+			{
+				"type":"interval",
+				"from":"13/03/2020",
+				"until":"12/03/2020"
+			}
+		},
 		"fields": ["company", "dataTime", "score"]
 	}
 }
