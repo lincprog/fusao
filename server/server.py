@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file, send_from_directory, safe_join, abort
 from bs4 import BeautifulSoup as bs
 import urllib
 import urllib.parse
@@ -7,6 +7,10 @@ import requests
 import consumidor
 import ReclameAqui
 import pymongo
+import os
+from csv import writer
+from csv import reader
+from zipfile import ZipFile
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
@@ -102,6 +106,51 @@ def name():
     except:
         return jsonify({"success": False, "status": "Internal Server Error"}), 500
 
+@app.route("/export", methods=['POST'])
+def export():
+    try:
+        if not request.is_json:
+            raise Exception()
+    except:
+        return jsonify({"success": False, "status": "Bad Request"}), 400
+    try:
+        parameters = request.get_json()
+        platforms = parameters
+        mongoexport = "mongoexport --db=fusao --collection={collection} --type=csv --fields={fields} --out=./temp/{collection}.csv {query}"
+        query=""
+        
+        if os.path.exists('./temp/mongoexport.csv'):
+            os.remove('./temp/mongoexport.csv')
+        if os.path.exists('./temp/reclameaqui.csv'):
+            os.remove('./temp/reclameaqui.csv')
+        if os.path.exists('./temp/consumidor.csv'):
+            os.remove('./temp/consumidor.csv')
+        if os.path.exists('./temp/result.zip'):
+            os.remove('./temp/result.zip')
+        
+        if "consumidor" in platforms:
+            consumidor = platforms["consumidor"]
+            co_fields = ",".join(consumidor["fields"])
+            co_query = query #co_query = "--query='\{query}\'".format(query=consumidor["query"]) if "query" in consumidor else query
+            co_mongoexport = mongoexport.format(collection="consumidor", fields=co_fields, query=co_query)
+            os.system(co_mongoexport)
+        
+        if "reclameaqui" in platforms:
+            reclameaqui = platforms["reclameaqui"]
+            ra_fields = ",".join(reclameaqui["fields"])
+            ra_query = query #co_query = "--query='\{query}\'".format(query=reclameaqui["query"]) if "query" in reclameaqui else query
+            ra_mongoexport = mongoexport.format(collection="reclameaqui", fields=ra_fields, query=ra_query)
+            os.system(ra_mongoexport)
+                
+        with ZipFile('./temp/result.zip', 'w') as f_zip:
+            if os.path.exists('./temp/reclameaqui.csv'):
+                f_zip.write('./temp/reclameaqui.csv')
+            if os.path.exists('./temp/consumidor.csv'):
+                f_zip.write('./temp/consumidor.csv')
+        
+        return send_from_directory('./temp', filename="result.zip", as_attachment=True)
+    except:
+        return jsonify({"success": False, "status": "Internal Server Error"}), 500
 
 app.run(debug=True, host='0.0.0.0')
 

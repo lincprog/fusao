@@ -83,3 +83,16 @@ A resposta é um json contendo o resultado da análise:
 ```json
 {"success":true}
 ```
+## /export
+A esta rota deverá ser enviada uma requisição ```POST``` contendo um ```JSON``` com os dados necessários para exportar registros para formato csv. Ex.:
+```json
+{
+	"consumidor": {
+		"fields": ["company", "data", "nota"]
+	},
+	"reclameaqui": {
+		"fields": ["company", "dataTime", "score"]
+	}
+}
+```
+A resposta é um arquivo .zip contendo o(s) arquivo(s) gerado.
