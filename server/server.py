@@ -12,6 +12,7 @@ from csv import writer
 from csv import reader
 from zipfile import ZipFile
 import pathlib
+from bson import json_util
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
@@ -123,34 +124,31 @@ def export():
         mongoexport = "mongoexport --db=fusao --collection={collection} --type=csv --fields={fields} --out="+os.path.join(path_server,'temp','{collection}')+".csv {query}"
         query=""
         
-        if os.path.exists(os.path.join(path_server,'temp','mongoexport.csv')):
-            os.remove(os.path.join(path_server,'temp','mongoexport.csv'))
-        if os.path.exists(os.path.join(path_server,'temp','reclameaqui.csv')):
-            os.remove(os.path.join(path_server,'temp','reclameaqui.csv'))
-        if os.path.exists(os.path.join(path_server,'temp','consumidor.csv')):
-            os.remove(os.path.join(path_server,'temp','consumidor.csv'))
-        if os.path.exists(os.path.join(path_server,'temp','result.zip')):
-            os.remove(os.path.join(path_server,'temp','result.zip'))
+        for file in ["consumidor.csv", "reclameaqui.csv", "result.zip"]:
+            if os.path.exists(os.path.join(path_server,'temp',file)):
+                os.remove(os.path.join(path_server,'temp',file))
         
-        if "consumidor" in platforms:
-            consumidor = platforms["consumidor"]
-            co_fields = ",".join(consumidor["fields"])
-            co_query = query #co_query = "--query='\{query}\'".format(query=consumidor["query"]) if "query" in consumidor else query
-            co_mongoexport = mongoexport.format(collection="consumidor", fields=co_fields, query=co_query)
-            os.system(co_mongoexport)
-        
-        if "reclameaqui" in platforms:
-            reclameaqui = platforms["reclameaqui"]
-            ra_fields = ",".join(reclameaqui["fields"])
-            ra_query = query #co_query = "--query='\{query}\'".format(query=reclameaqui["query"]) if "query" in reclameaqui else query
-            ra_mongoexport = mongoexport.format(collection="reclameaqui", fields=ra_fields, query=ra_query)
-            os.system(ra_mongoexport)
+        for platform in ["consumidor", "reclameaqui"]:
+            if platform in platforms:
+                params = platforms[platform]
+                platform_fields = ",".join(params["fields"])
+                dict_query = { "company" : params["company"] }
+                if "date" in params:
+                    date = params["date"]
+                    if date["type"] == "day":
+                        print(date["day"]) # alter dict_query
+                    elif date["type"] == "interval":
+                        date_from = date["from"]
+                        date_until = date["until"]
+                        print(date["from"],date["until"]) # alter dict_query
+                platform_query = "--query=\"{query}\"".format(query = str(dict_query).replace('\'', '\\"')) if "query" in params else query
+                platform_mongoexport = mongoexport.format(collection = platform, fields = platform_fields, query = platform_query)
+                os.system(platform_mongoexport)
         
         with ZipFile(os.path.join(path_server,'temp','result.zip'), 'w') as f_zip:
-            if os.path.exists(os.path.join(path_server,'temp','reclameaqui.csv')):
-                f_zip.write(os.path.join(path_server,'temp','reclameaqui.csv'), 'reclameaqui.csv')
-            if os.path.exists(os.path.join(path_server,'temp','consumidor.csv')):
-                f_zip.write(os.path.join(path_server,'temp','consumidor.csv'), 'consumidor.csv')
+            for filename in ["consumidor", "reclameaqui"]:
+                if os.path.exists(os.path.join(path_server,'temp',filename+'.csv')):
+                    f_zip.write(os.path.join(path_server,'temp',filename+'.csv'), filename+'.csv')
         
         return send_from_directory(os.path.join(path_server,'temp'), filename="result.zip", as_attachment=True)
     except:
