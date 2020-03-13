@@ -77,7 +77,7 @@ def crawl(id, qtdPaginas, qtdItens, nome, pular):
 					if replys : userreply = replys[0]["message"] # take the first one
 
 				# Now let's write the register:
-				registro = {"title":title, "city":city, "state": state, "hash":hash, "dataTime":dataTime, "complaint":complaint, "companyreply":companyreply, "userreply": userreply, "finalreply": finalreply, "status": status, "wouldBuyAgain": wouldBuyAgain, "score": score}
+				registro = {"company": nome, "title": title, "city": city, "state": state, "hash": hash, "dataTime": dataTime, "complaint": complaint, "companyreply": companyreply, "userreply": userreply, "finalreply": finalreply, "status": status, "wouldBuyAgain": wouldBuyAgain, "score": score}
 				ra_json.append(registro)
 			else:
 				print(reclamacao["id"]+" already saved... ")

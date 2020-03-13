@@ -112,7 +112,7 @@ def crawl(fornecedor, dataInicio, dataTermino):
                 avaliacao		= pre_avaliacao ? pre_avaliacao.innerText.replace(/[\\t\\n]/g,' ').replace(/\\s\\s+/g, ' ').trim() : '-';
                 
                 //return `${empresa}\\t${data}\\t${cidade}\\t${nota}\\t${relato}\\t${resposta}\\t${avaliacao}`; //`"${relato}"`;
-                return `{"empresa": "${empresa.replace(/\\"/g, "\\\\\\"")}", "data": "${data.replace(/\\"/g, "\\\\\\"")}", "cidade": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
+                return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "data": "${data.replace(/\\"/g, "\\\\\\"")}", "cidade": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
                 
             }).join(',\\n');
             //console.log("["+csv+"]");
