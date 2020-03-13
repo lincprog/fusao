@@ -11,6 +11,10 @@ import os
 from csv import writer
 from csv import reader
 from zipfile import ZipFile
+import pathlib
+
+path_server = pathlib.Path(__file__).parent.absolute()
+
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
@@ -116,17 +120,17 @@ def export():
     try:
         parameters = request.get_json()
         platforms = parameters
-        mongoexport = "mongoexport --db=fusao --collection={collection} --type=csv --fields={fields} --out=./temp/{collection}.csv {query}"
+        mongoexport = "mongoexport --db=fusao --collection={collection} --type=csv --fields={fields} --out="+os.path.join(path_server,'temp','{collection}')+".csv {query}"
         query=""
         
-        if os.path.exists('./temp/mongoexport.csv'):
-            os.remove('./temp/mongoexport.csv')
-        if os.path.exists('./temp/reclameaqui.csv'):
-            os.remove('./temp/reclameaqui.csv')
-        if os.path.exists('./temp/consumidor.csv'):
-            os.remove('./temp/consumidor.csv')
-        if os.path.exists('./temp/result.zip'):
-            os.remove('./temp/result.zip')
+        if os.path.exists(os.path.join(path_server,'temp','mongoexport.csv')):
+            os.remove(os.path.join(path_server,'temp','mongoexport.csv'))
+        if os.path.exists(os.path.join(path_server,'temp','reclameaqui.csv')):
+            os.remove(os.path.join(path_server,'temp','reclameaqui.csv'))
+        if os.path.exists(os.path.join(path_server,'temp','consumidor.csv')):
+            os.remove(os.path.join(path_server,'temp','consumidor.csv'))
+        if os.path.exists(os.path.join(path_server,'temp','result.zip')):
+            os.remove(os.path.join(path_server,'temp','result.zip'))
         
         if "consumidor" in platforms:
             consumidor = platforms["consumidor"]
@@ -141,14 +145,14 @@ def export():
             ra_query = query #co_query = "--query='\{query}\'".format(query=reclameaqui["query"]) if "query" in reclameaqui else query
             ra_mongoexport = mongoexport.format(collection="reclameaqui", fields=ra_fields, query=ra_query)
             os.system(ra_mongoexport)
-                
-        with ZipFile('./temp/result.zip', 'w') as f_zip:
-            if os.path.exists('./temp/reclameaqui.csv'):
-                f_zip.write('./temp/reclameaqui.csv')
-            if os.path.exists('./temp/consumidor.csv'):
-                f_zip.write('./temp/consumidor.csv')
         
-        return send_from_directory('./temp', filename="result.zip", as_attachment=True)
+        with ZipFile(os.path.join(path_server,'temp','result.zip'), 'w') as f_zip:
+            if os.path.exists(os.path.join(path_server,'temp','reclameaqui.csv')):
+                f_zip.write(os.path.join(path_server,'temp','reclameaqui.csv'), 'reclameaqui.csv')
+            if os.path.exists(os.path.join(path_server,'temp','consumidor.csv')):
+                f_zip.write(os.path.join(path_server,'temp','consumidor.csv'), 'consumidor.csv')
+        
+        return send_from_directory(os.path.join(path_server,'temp'), filename="result.zip", as_attachment=True)
     except:
         return jsonify({"success": False, "status": "Internal Server Error"}), 500
 
