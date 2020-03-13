@@ -13,6 +13,7 @@ from csv import reader
 from zipfile import ZipFile
 import pathlib
 from bson import json_util
+from datetime import datetime
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
@@ -45,6 +46,7 @@ def analysis():
             co = parameters["consumidor"]
             results_co = json.loads(consumidor.crawl(co["nome"], co["dataInicio"], co["dataTermino"]))
             for r in results_co:
+                r["data"]= datetime.strptime(r["data"], "%d/%m/%Y")
                 col_co.update_one(r, {"$set": r}, upsert=True)
         
         if "reclameaqui" in parameters:
@@ -52,6 +54,7 @@ def analysis():
             ra = parameters["reclameaqui"]
             results_ra = ReclameAqui.crawl(ra["id"], ra["qtdPaginas"], ra["qtdItens"], ra["shortname"], ra["pular"])
             for r in results_ra:
+                r["dataTime"] = datetime.strptime(r["dataTime"], "%Y-%m-%dT%H:%M:%S")
                 col_ra.update_one(r, {"$set": r}, upsert=True)
         
         #TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
