@@ -5,13 +5,21 @@
             "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001411/perfil"
         },
         {
-            "title": "Americanas.com",
+            "title": "Americanas Marketplace",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001407/perfil"
+        },
+        {
+            "title": "Americanas Online",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001407/perfil"
+        },
+        {
+            "title": "Grupo Americanas",
             "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001407/perfil"
         }
     ],
     "reclameaqui": [
         {
-            "companyName": "Americanas Marketplace",
+            "title": "Americanas Viagens",
             "count": 67190,
             "created": "2019-08-22T18:13:51",
             "fantasyName": "Americanas Marketplace",
@@ -23,6 +31,34 @@
             "solvedPercentual": "82.1",
             "status": "GOOD",
             "url": "https://www.reclameaqui.com.br/empresa/americanas-marketplace"
+        },
+        {
+            "title": "Americanas Marketplace",
+            "count": 67190,
+            "created": "2019-08-22T18:13:51",
+            "fantasyName": "Americanas Marketplace",
+            "finalScore": "7.5",
+            "hasVerificada": false,
+            "id": "97827",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/company_142ed4d8-665f-4124-b401-796783e932a7.png",
+            "shortname": "americanas-marketplace",
+            "solvedPercentual": "82.1",
+            "status": "GOOD",
+            "url": "https://www.reclameaqui.com.br/empresa/americanas-marketplace"
+        },
+        {
+            "title": "Americanas Online",
+            "count": 67190,
+            "created": "2019-08-22T18:13:51",
+            "fantasyName": "Americanas Marketplace",
+            "finalScore": "7.5",
+            "hasVerificada": false,
+            "id": "97827",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/company_142ed4d8-665f-4124-b401-796783e932a7.png",
+            "shortname": "americanas-marketplace",
+            "solvedPercentual": "82.1",
+            "status": "GOOD",
+            "url": "https://www.reclameaqui.com.br/empresa/americanas-marketplace"
         }
-	]
+    ]
 }
