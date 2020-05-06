@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" v-show="resultado == null">
-      <Panel title="Pesquisa Inicial" color="cyan darken-1" :dark="true" :dense="true">
+      <Panel title="Pesquisa Inicial" color="primary" :dark="true" :dense="true">
         <v-text-field label="Nome da Empresa" v-model="empresa.name"></v-text-field>
         <v-select
               v-model="empresa.platforms"
@@ -15,12 +15,12 @@
               persistent-hint
             ></v-select>
         <template v-slot:acao >
-          <v-btn color="info" depressed @click="buscar">buscar informações</v-btn>
+          <v-btn color="success" depressed @click="buscar">buscar informações</v-btn>
         </template>
       </Panel>
     </v-col>
     <v-col cols="12" v-show="resultado != null">
-      <Panel :title="'Resultado encontrados para '+empresa.name" color="cyan darken-1" :dark="true" :dense="true">
+      <Panel :title="'Resultado encontrados para '+empresa.name" color="info" :dark="true" :dense="true">
         <v-sheet
           class="mx-auto"
           elevation="8"
@@ -47,7 +47,7 @@
                       v-slot:default="{ active, toggle }"
                     >
                       <v-card
-                        :color="active ? 'primary' : 'secondary'"
+                        :color="active ? 'accent' : 'primary'"
                         class="mx-3"
                         max-width="270"
                         dark
@@ -67,8 +67,9 @@
                         <v-card-title v-if="r.companyName">{{ r.companyName }}</v-card-title>
                         <v-card-title v-else>{{ r.title }}</v-card-title>
                         <v-card-actions>
+                          <v-spacer></v-spacer>
                           <v-btn
-                            color="orange"
+                            color="white"
                             text
                             :target="r.url"
                             :href="r.url"
@@ -84,7 +85,7 @@
           </v-expansion-panels>
         </v-sheet>
       <template v-slot:acao >
-        <v-btn color="info" depressed @click="buscar">fusão e analise</v-btn>
+        <v-btn color="success" depressed @click="buscar">fusão e analise</v-btn>
       </template>
       </Panel>
     </v-col>
