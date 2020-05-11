@@ -85,7 +85,7 @@
           </v-expansion-panels>
         </v-sheet>
       <template v-slot:acao >
-        <v-btn color="success" depressed @click="buscar">fusão e analise</v-btn>
+        <v-btn color="success" depressed to="fusao">fusão e analise</v-btn>
       </template>
       </Panel>
     </v-col>
