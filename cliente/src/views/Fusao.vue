@@ -44,7 +44,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="6">
               <v-card
                 class="pa-2"
                 outlined
@@ -54,7 +54,7 @@
               <BubbleChart :chartData="bubbledata" :options="options" />
               </v-card>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-card
                 class="pa-2"
                 outlined
@@ -64,7 +64,7 @@
               <DoughnutChart :chartData="doughnutdata" :options="options"/>
               </v-card>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-card
                 class="pa-2"
                 outlined
@@ -131,10 +131,18 @@ import ScatterChart from '../components/charts/ScatterChart'
 import MapChart from '../components/charts/MapChart'
 
 const meses = ['Maio/19', 'Junho/19', 'Julho/19', 'Agost/19', 'Setembro/19', 'Outubro/19', 'Novembro/19', 'Dezembro/19', 'Janeiro/20', 'Fevereiro/20', 'Março/20', 'Abril/20']
-const getRandomArbitrary = () => {
-  const max = 500
-  const min = 50
+const getRandomArbitrary = (max = 500, min = 50) => {
   return Math.floor(Math.random() * (max - min)) + min
+}
+
+const getColor = () => {
+  const r = getRandomArbitrary(255, 0)
+  const g = getRandomArbitrary(255, 0)
+  const b = getRandomArbitrary(255, 0)
+  return {
+    backgroundColor: `rgba(${r},${g},${b},0.2)`,
+    borderColor: `rgba(${r},${g},${b},1)`
+  }
 }
 
 export default {
@@ -174,11 +182,12 @@ export default {
         ]
       },
       bubbledata: {
+        display: true,
+        labels: ['Reclame Aqui', 'Consumidor.gov'],
         datasets: [
           {
             label: ['Acre'],
-            backgroundColor: 'rgba(255,221,50,0.2)',
-            borderColor: 'rgba(255,221,50,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -186,8 +195,7 @@ export default {
             }]
           }, {
             label: ['Amapá'],
-            backgroundColor: 'rgba(60,186,159,0.2)',
-            borderColor: 'rgba(60,186,159,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -195,8 +203,7 @@ export default {
             }]
           }, {
             label: ['Roraima'],
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            borderColor: '#000',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -204,8 +211,7 @@ export default {
             }]
           }, {
             label: ['Pará'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -213,8 +219,7 @@ export default {
             }]
           }, {
             label: ['Amazonas'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -222,8 +227,7 @@ export default {
             }]
           }, {
             label: ['Maranhão'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -231,8 +235,7 @@ export default {
             }]
           }, {
             label: ['Ceará'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -240,8 +243,7 @@ export default {
             }]
           }, {
             label: ['Piauí'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -249,8 +251,7 @@ export default {
             }]
           }, {
             label: ['Rio Grande do Norte'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -258,8 +259,7 @@ export default {
             }]
           }, {
             label: ['Pernambuco'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -267,8 +267,7 @@ export default {
             }]
           }, {
             label: ['Alagoas'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -276,8 +275,7 @@ export default {
             }]
           }, {
             label: ['Paraíba'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -285,8 +283,7 @@ export default {
             }]
           }, {
             label: ['Sergipe'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -294,8 +291,7 @@ export default {
             }]
           }, {
             label: ['Bahia'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -303,8 +299,7 @@ export default {
             }]
           }, {
             label: ['Tocantins'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -312,8 +307,7 @@ export default {
             }]
           }, {
             label: ['Goiás'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -321,8 +315,7 @@ export default {
             }]
           }, {
             label: ['Mato Grosso'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -330,8 +323,7 @@ export default {
             }]
           }, {
             label: ['Mato Grosso do Sul'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -339,8 +331,7 @@ export default {
             }]
           }, {
             label: ['Rondônia'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -348,8 +339,7 @@ export default {
             }]
           }, {
             label: ['Distrito Federal'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -357,8 +347,7 @@ export default {
             }]
           }, {
             label: ['Minas Gerais'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -366,8 +355,7 @@ export default {
             }]
           }, {
             label: ['São Paulo'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -375,8 +363,7 @@ export default {
             }]
           }, {
             label: ['Espirito Santo'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -384,8 +371,7 @@ export default {
             }]
           }, {
             label: ['Rio de Janeiro'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -393,8 +379,7 @@ export default {
             }]
           }, {
             label: ['Paraná'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -402,8 +387,7 @@ export default {
             }]
           }, {
             label: ['Santa Catarina'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
@@ -411,8 +395,7 @@ export default {
             }]
           }, {
             label: ['Rio Grande do Sul'],
-            backgroundColor: 'rgba(193,46,12,0.2)',
-            borderColor: 'rgba(193,46,12,1)',
+            ...getColor(),
             data: [{
               x: getRandomArbitrary(),
               y: getRandomArbitrary(),
