@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, send_file, send_from_directory, safe_join, abort
+from flask_cors import CORS, cross_origin
 from bs4 import BeautifulSoup as bs
 import urllib
 import urllib.parse
@@ -14,6 +15,7 @@ from zipfile import ZipFile
 import pathlib
 from bson import json_util
 from datetime import datetime
+from subprocess import DEVNULL, STDOUT, check_call
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
@@ -22,6 +24,7 @@ mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
 col_co = fusao["consumidor"]
 col_ra = fusao["reclameaqui"]
+col_columns = fusao["columns"]
 
 app = Flask(__name__)
 
@@ -66,6 +69,7 @@ def analysis():
         
 
 @app.route("/name", methods=['POST'])
+@cross_origin()
 def name():
     try:
         if not request.is_json:
@@ -123,18 +127,20 @@ def export():
         return jsonify({"success": False, "status": "Bad Request"}), 400
     try:
         parameters = request.get_json()
-        platforms = parameters
+        columns = parameters["columns"]
+        filters = parameters["filters"]
+        platforms = parameters["platforms"]
         mongoexport = "mongoexport --db=fusao --collection={collection} --type=csv --fields={fields} --out="+os.path.join(path_server,'temp','{collection}')+".csv {query}"
         query=""
         
-        for file in ["consumidor.csv", "reclameaqui.csv", "result.zip"]:
+        for file in ["consumidor.csv", "reclameaqui.csv", "result.csv"]:
             if os.path.exists(os.path.join(path_server,'temp',file)):
                 os.remove(os.path.join(path_server,'temp',file))
         
         for platform in ["consumidor", "reclameaqui"]:
             if platform in platforms:
                 params = platforms[platform]
-                platform_fields = ",".join(params["fields"])
+                platform_fields = ",".join(list(map(lambda col_name: col_columns.find_one({"name": col_name}, {platform:1})[platform], columns)))
                 dict_query = { "company" : params["company"] }
                 if "date" in params:
                     date = params["date"]
@@ -146,15 +152,21 @@ def export():
                         print(date["from"],date["until"]) # alter dict_query
                 platform_query = "--query=\"{query}\"".format(query = str(dict_query).replace('\'', '\\"')) if "query" in params else query
                 platform_mongoexport = mongoexport.format(collection = platform, fields = platform_fields, query = platform_query)
-                os.system(platform_mongoexport)
+                check_call(platform_mongoexport, stdout=DEVNULL, stderr=STDOUT)
         
-        with ZipFile(os.path.join(path_server,'temp','result.zip'), 'w') as f_zip:
+        with open(os.path.join(path_server,'temp','result.csv'), 'w', encoding='utf-8') as result_csv:
+            cols = ",".join(columns)
+            result_csv.write("platform," + cols + '\n')
             for filename in ["consumidor", "reclameaqui"]:
                 if os.path.exists(os.path.join(path_server,'temp',filename+'.csv')):
-                    f_zip.write(os.path.join(path_server,'temp',filename+'.csv'), filename+'.csv')
+                    with open(os.path.join(path_server,'temp',filename+'.csv'), 'r', encoding='utf-8') as read_csv:
+                        next(read_csv)  #skip header
+                        for line in read_csv:
+                            result_csv.write(filename + "," + line)
         
-        return send_from_directory(os.path.join(path_server,'temp'), filename="result.zip", as_attachment=True)
+        return send_from_directory(os.path.join(path_server,'temp'), filename="result.csv", as_attachment=True)
     except:
+        raise Exception()
         return jsonify({"success": False, "status": "Internal Server Error"}), 500
 
 app.run(debug=True, host='0.0.0.0')
