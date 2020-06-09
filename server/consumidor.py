@@ -1,16 +1,17 @@
-#sudo apt-get install -y selenium chromium-browser flask
+# sudo apt-get install -y selenium chromium-browser flask
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+
 
 def crawl(fornecedor, dataInicio, dataTermino):
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    driver = webdriver.Chrome('chromedriver.exe', options=options)
+    options.add_argument("headless")
+    driver = webdriver.Chrome("chromedriver.exe", options=options)
 
     driver.get("https://www.consumidor.gov.br/pages/indicador/relatos/abrir")
 
-    injected_javascript = '''
+    injected_javascript = (
+        '''
 
     done = arguments[0];
     (({
@@ -121,11 +122,18 @@ def crawl(fornecedor, dataInicio, dataTermino):
         }
         
         })({
-        fornecedor : "'''+fornecedor+'''",
-        dataInicio : "'''+dataInicio+'''",
-        dataTermino : "'''+dataTermino+'''",
+        fornecedor : "'''
+        + fornecedor
+        + '''",
+        dataInicio : "'''
+        + dataInicio
+        + '''",
+        dataTermino : "'''
+        + dataTermino
+        + """",
         });
-        '''
+        """
+    )
 
     csv = driver.execute_async_script(injected_javascript)
 
