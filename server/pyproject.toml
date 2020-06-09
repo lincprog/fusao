@@ -7,9 +7,12 @@ authors = ["Júnior Lima <juniorlima.e@gmail.com>","Rodrigo Frazão Maia <rodrig
 [tool.poetry.dependencies]
 python = "^3.6"
 flask = "^1.1.2"
-pymongo = "^2.3.0"
 bs4 = "^0.0.1"
 selenium = "^3.141.0"
+flask_pymongo = "^2.3.0"
+python-dotenv = "^0.13.0"
+flask_restful = "^0.3.8"
+flask-mongoengine = "^0.9.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
