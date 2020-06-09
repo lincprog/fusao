@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fusao-server"
+version = "0.1.0"
+description = ""
+authors = ["Júnior Lima <juniorlima.e@gmail.com>","Rodrigo Frazão Maia <rodrigoframa@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+flask = "^1.1.2"
+pymongo = "^2.3.0"
+bs4 = "^0.0.1"
+selenium = "^3.141.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.3"
+black = "^19.10b0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
