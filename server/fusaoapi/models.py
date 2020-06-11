@@ -3,6 +3,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 
 
 class User(db.Document):
+    meta = {"collection": "users"}
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
 

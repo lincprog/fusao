@@ -1,6 +1,7 @@
 from flask import Flask
 
-from fusaoapi.ext import auth, blueprints, database
+from fusaoapi.ext import auth, database
+from fusaoapi import blueprints
 
 
 def create_app(config_object="fusaoapi.settings"):
