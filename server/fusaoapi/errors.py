@@ -14,6 +14,10 @@ class UnauthorizedError(Exception):
     pass
 
 
+class PasswordError(Exception):
+    pass
+
+
 errors = {
     "InternalServerError": {"message": "Something went wrong", "status": 500},
     "SchemaValidationError": {
@@ -27,5 +31,9 @@ errors = {
     "UnauthorizedError": {
         "message": "Invalid username or password",
         "status": 401,
+    },
+    "PasswordError": {
+        "message": "password and confirmPassword is different",
+        "status": 400,
     },
 }

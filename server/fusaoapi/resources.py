@@ -8,19 +8,44 @@ from fusaoapi.errors import (
     EmailAlreadyExistsError,
     UnauthorizedError,
     InternalServerError,
+    PasswordError,
 )
 
 parser = reqparse.RequestParser()
-parser.add_argument("email", help="This field cannot be blank", required=True)
 parser.add_argument(
-    "password", help="This field cannot be blank", required=True
+    "email",
+    type=str,
+    help="You need to enter your e-mail address",
+    required=True,
+)
+parser.add_argument(
+    "password",
+    type=str,
+    help="You need to enter your chosen password",
+    required=True,
 )
 
 
 class UserRegister(Resource):
     def post(self):
         try:
-            data = parser.parse_args()
+            parser_register = parser.copy()
+            parser_register.add_argument(
+                "name",
+                type=str,
+                help="You need to enter your name",
+                required=True,
+            )
+            parser_register.add_argument(
+                "confirmPassword",
+                type=str,
+                help="You need to enter your confirmPassword",
+                required=True,
+            )
+            data = parser_register.parse_args()
+            if data["password"] != data["confirmPassword"]:
+                raise PasswordError
+            del data["confirmPassword"]
             user = User(**data)
             user.hash_password()
             user.save()
@@ -30,6 +55,8 @@ class UserRegister(Resource):
             raise SchemaValidationError
         except NotUniqueError:
             raise EmailAlreadyExistsError
+        except PasswordError:
+            raise PasswordError
         except Exception:
             raise InternalServerError
 
@@ -47,7 +74,10 @@ class UserLogin(Resource):
             access_token = create_access_token(
                 identity=str(user.id), expires_delta=expires
             )
-            return {"token": access_token}, 200
+            return (
+                {"token": access_token, "name": user.name, "email": user.email},
+                200,
+            )
         except (UnauthorizedError, DoesNotExist):
             raise UnauthorizedError
 

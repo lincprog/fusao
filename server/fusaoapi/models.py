@@ -6,6 +6,7 @@ class User(db.Document):
     meta = {"collection": "users"}
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
+    name = db.StringField(required=True, max_lenght=50)
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode("utf8")
