@@ -1,5 +1,6 @@
 <template>
   <v-app id="inspire">
+    <SnackBar/>
     <v-navigation-drawer
       v-model="drawer"
       app
@@ -39,7 +40,7 @@
         <v-icon>mdi-heart</v-icon>
       </v-btn>
       <v-btn icon>
-        <v-icon>mdi-home</v-icon>
+        <v-icon @click="logout">mdi-exit-to-app</v-icon>
       </v-btn>
     </v-app-bar>
     <v-content>
@@ -67,19 +68,50 @@
 </template>
 
 <script>
+import SnackBar from './components/SnackBar'
+import { userKey } from './config'
+import { mapState } from 'vuex'
 export default {
   name: 'App',
-  components: {},
-  computed: {
-  },
+  components: { SnackBar },
+  computed: { ...mapState(['isMenuVisible', 'user']) },
   data () {
     return {
       drawer: null,
       title: process.env.VUE_APP_TITLE,
-      mode: process.env.VUE_APP_MODE || ''
+      mode: process.env.VUE_APP_MODE || '',
+      validatingToken: true
     }
   },
   methods: {
+    logout () {
+      localStorage.removeItem(userKey)
+      this.$router.push({ name: 'Auth' })
+    },
+    async validateToken () {
+      this.validatingToken = true
+      const json = localStorage.getItem(userKey)
+      const userData = JSON.parse(json)
+      this.$store.commit('setUser', null)
+      if (!userData) {
+        this.validatingToken = false
+        this.$router.push({ name: 'auth' })
+        return
+      }
+      // const res = await axios.post(`${baseApiUrl}/validateToken`, userData)
+      const res = []
+      if (res.data) {
+        this.$store.commit('setUser', userData)
+
+        if (this.$mq === 'xs' || this.$mq === 'sm') {
+          this.$store.commit('toggleMenu', false)
+        }
+      } else {
+        localStorage.removeItem(userKey)
+        this.$router.push({ name: 'auth' })
+      }
+      this.validatingToken = false
+    }
   }
 }
 </script>

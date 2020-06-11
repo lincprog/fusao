@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { userkey, baseApiUrl } from '../config'
+import { userKey, baseApiUrl } from '../config'
 import axios from 'axios'
 console.log(baseApiUrl)
 
@@ -94,7 +94,7 @@ export default {
     signin () {
       axios.post(`${baseApiUrl}/login`, this.user)
         .then(res => {
-          localStorage.setItem(userkey, JSON.stringify(res.data))
+          localStorage.setItem(userKey, JSON.stringify(res.data))
           this.$router.push({ path: '/' })
         })
         .catch(e => console.log('erro', e))
