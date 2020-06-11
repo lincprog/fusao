@@ -5,6 +5,10 @@ import Home from '../views/Home'
 Vue.use(VueRouter)
 
 const routes = [{
+  path: '*',
+  redirect: '/'
+},
+{
   path: '/',
   name: 'Home',
   component: Home
@@ -15,12 +19,9 @@ const routes = [{
   component: () => import('../views/Empresa')
 },
 {
-  path: '/login',
-  name: 'Login',
-  // route level code-splitting
-  // this generates a separate chunk (about.[hash].js) for this route
-  // which is lazy-loaded when the route is visited.
-  component: () => import('../views/Login.vue')
+  path: '/auth',
+  name: 'Auth',
+  component: () => import('../views/Auth')
 },
 {
   path: '/fusao',
