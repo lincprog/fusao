@@ -1,3 +1,3 @@
 FLASK_APP=fusaoapi
 FLASK_ENV=development
-FLASK_DEBUG=True
+FLASK_DEBUG=False
