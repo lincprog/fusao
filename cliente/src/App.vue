@@ -1,5 +1,6 @@
 <template>
   <v-app id="inspire">
+    <Loading/>
     <SnackBar/>
     <v-navigation-drawer
       v-model="drawer"
@@ -68,12 +69,13 @@
 </template>
 
 <script>
+import Loading from './components/Loading'
 import SnackBar from './components/SnackBar'
 import { userKey } from './config'
 import { mapState } from 'vuex'
 export default {
   name: 'App',
-  components: { SnackBar },
+  components: { SnackBar, Loading },
   computed: { ...mapState(['isMenuVisible', 'user']) },
   data () {
     return {

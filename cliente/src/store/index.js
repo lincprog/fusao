@@ -15,7 +15,7 @@ export default new Vuex.Store({
       warning: 'cuidado',
       validation: ['nao passou', 'tente novamente', 'agora vai']
     },
-    fetching: false
+    fetching: true
   },
   mutations: {
     'Auth/SET_TOKEN' (state, value) {
