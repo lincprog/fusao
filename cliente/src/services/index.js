@@ -1,22 +1,14 @@
 import { http } from '../plugins/http'
-import { getData, getError } from '../utils'
+import { getData } from '../utils'
 
 // send login data and retrive a new token
 export const postLogin = ({ email, password }) =>
-  http.post('/auth/token/issue', { email, password })
-  /**
-   * functional approach, more readable and generate minus code
-   * examples:
-   * PromiseObject.then(response => response.data)
-   * PromiseObject.then({ data } => data)
-   *
-   * We do this many times in many locations.
-   * We know that .then accepts a function and what arguments it receives
-   * This is because in JavaScript functions are first class citizens.
-   * In summary we can pass functions as arguments and also receive functions as results
-   * (first-class function and higher-order function)
-   */
-    .then(getData) // .then(response => getData(response))
+  http.post('/login', { email, password })
+    .then(getData)
+
+export const postRegister = ({ name, email, password, confirmPassword }) =>
+  http.post('/signup', { name, email, password, confirmPassword })
+    .then(getData)
 
 // get current user's data
 export const loadUserData = () => http.get('/me').then(getData)

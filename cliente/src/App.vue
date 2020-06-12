@@ -89,30 +89,6 @@ export default {
     logout () {
       localStorage.removeItem(userKey)
       this.$router.push({ name: 'Auth' })
-    },
-    async validateToken () {
-      this.validatingToken = true
-      const json = localStorage.getItem(userKey)
-      const userData = JSON.parse(json)
-      this.$store.commit('setUser', null)
-      if (!userData) {
-        this.validatingToken = false
-        this.$router.push({ name: 'auth' })
-        return
-      }
-      // const res = await axios.post(`${baseApiUrl}/validateToken`, userData)
-      const res = []
-      if (res.data) {
-        this.$store.commit('setUser', userData)
-
-        if (this.$mq === 'xs' || this.$mq === 'sm') {
-          this.$store.commit('toggleMenu', false)
-        }
-      } else {
-        localStorage.removeItem(userKey)
-        this.$router.push({ name: 'auth' })
-      }
-      this.validatingToken = false
     }
   }
 }

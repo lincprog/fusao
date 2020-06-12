@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { isEmpty } from 'lodash'
 import { userKey } from '../config'
+import * as services from '../services'
+import { setToken as httpSetToken } from '../plugins/http'
 
 Vue.use(Vuex)
 
@@ -55,6 +57,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    registerUser ({ dispatch }, payload) {
+      return services.postRegister(payload)
+        .then(res => res)
+    },
+    attemptLogin ({ dispatch }, payload) {
+      return services.postLogin(payload)
+        .then(user => {
+          localStorage.setItem(userKey, JSON.stringify(user))
+          console.log(user)
+          const { name, email, token } = user
+          dispatch('setUser', { name, email })
+          dispatch('setToken', token)
+          return user // keep promise chain
+        })
+    },
     setFetching ({ commit }, obj) {
       commit('setFetching', obj)
     },
@@ -77,15 +94,19 @@ export default new Vuex.Store({
       if (isEmpty(user) || isEmpty(user.token)) {
         return Promise.reject(new Error('NO_TOKEN'))
       }
-      console.log('antes settoken')
-      return dispatch('setToken', user.token)
+      const { name, email, token } = user
+      dispatch('setUser', { name, email })
+      return dispatch('setToken', token)
     },
     setToken: ({ commit }, payload) => {
-      // prevent if payload is a object
       const token = (isEmpty(payload)) ? null : payload.token || payload
-      // Commit the mutations
+      httpSetToken(token)
       commit('setToken', token)
       return Promise.resolve(token) // keep promise chain
+    },
+    setUser: ({ commit }, user) => {
+      commit('setUser', user)
+      Promise.resolve(user) // keep promise chain
     }
   },
   modules: {
@@ -97,3 +118,24 @@ export default new Vuex.Store({
     // shouldShowNavigation: ({ route }, getters) => (route.path ? !getters.isAuthPage : false)
   }
 })
+
+// const subscribe = (store) => {
+//   store.subscribe((mutation, { Auth }) => {
+//     if (TYPES.SET_TOKEN === mutation.type) {
+//       /**
+//        * Set the Axios Authorization header with the token
+//        */
+//       httpSetToken(Auth.token)
+
+//       /**
+//        * Sets the token to the local storage
+//        * for auto-login purpose
+//        */
+//       localforage.setItem(userTokenStorageKey, Auth.token)
+//     }
+//   })
+// }
+
+// export default (store) => {
+//   subscribe(store)
+// };

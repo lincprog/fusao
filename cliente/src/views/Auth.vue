@@ -71,9 +71,7 @@
 </template>
 
 <script>
-import { userKey, baseApiUrl } from '../config'
-import axios from 'axios'
-console.log(baseApiUrl)
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Auth',
@@ -91,18 +89,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['attemptLogin', 'registerUser']),
     signin () {
-      axios.post(`${baseApiUrl}/login`, this.user)
-        .then(res => {
-          localStorage.setItem(userKey, JSON.stringify(res.data))
-          this.$router.push({ path: '/' })
-        })
+      this.attemptLogin(this.user)
+        .then(() => this.$router.push({ path: '/' }))
         .catch(e => console.log('erro', e))
     },
     signup () {
-      axios.post(`${baseApiUrl}/signup`, this.user)
+      this.registerUser(this.user)
         .then(res => {
-          alert('Salvo com sucesso')
+          console.log('res', res)
           this.user = {}
           this.showSignup = false
         })
