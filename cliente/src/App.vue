@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
-    <Loading/>
-    <SnackBar/>
+    <Loading />
+    <SnackBar />
     <v-navigation-drawer
       v-model="drawer"
       app
@@ -33,7 +33,8 @@
       clipped-left
       color="primary"
       dark
-      dense>
+      dense
+    >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ title + mode }}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -53,16 +54,17 @@
           align="center"
           justify="center"
         >
-         <v-col cols="12">
-          <router-view/>
-         </v-col>
+          <v-col cols="12">
+            <router-view />
+          </v-col>
         </v-row>
       </v-container>
     </v-content>
     <v-footer
       app
       dark
-      color="primary">
+      color="primary"
+    >
       <span>&copy; 2019 - EngComp Uema</span>
     </v-footer>
   </v-app>

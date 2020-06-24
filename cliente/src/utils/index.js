@@ -1,18 +1,19 @@
-import { get } from 'lodash'
+import { get, isArray } from 'lodash'
 
 export const getData = obj => get(obj, 'data')
 
-export const getError = (e) => {
-  let erro
-  if (e && e.response && e.response.data) {
-    // Vue.toasted.global.defaultError({ msg: e.response.data })
-    erro = e.response.data
-  } else if (typeof e === 'string') {
-    // Vue.toasted.global.defaultError({ msg: e })
-    erro = e
+export const getMessageError = obj => {
+  let msg = ''
+  if (typeof obj === 'string') {
+    msg = obj
+  } else if (isArray(obj)) {
+    msg = obj.join(',')
+  } else if (typeof obj === 'object') {
+    for (const key in obj) {
+      msg += `${key}: ${obj[key]}`
+    }
   } else {
-    // Vue.toasted.global.defaultError()
-    erro = 'Oops.. Erro inesperado.'
+    msg = 'Oops.. Erro inesperado.'
   }
-  return erro
+  return msg
 }

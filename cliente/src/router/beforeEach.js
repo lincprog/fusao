@@ -3,14 +3,14 @@ import store from '../store'
 const needAuth = auth => auth === true
 const beforeEach = (to, from, next) => {
   const auth = to.meta.requiresAuth
-  store.dispatch('resetMessages')
+  console.log('to', to, 'from', from)
   if (!needAuth(auth)) {
     next()
-  } else {
-    store.dispatch('checkUserToken')
-      .then(() => next())
-      .catch(() => next({ path: '/auth' }))
+    return
   }
+  store.dispatch('checkUserToken')
+    .then(() => next())
+    .catch(() => next({ name: 'Auth' }))
 }
 
 export default beforeEach

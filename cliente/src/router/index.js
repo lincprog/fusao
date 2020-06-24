@@ -42,15 +42,4 @@ const router = new VueRouter({
 
 router.beforeEach(beforeEach)
 
-// router.beforeEach((to, from, next) => {
-// console.log('antes das rotas ->', userKey)
-// const json = localStorage.getItem(userKey)
-// if (to.matched.some(record => record.meta.requiresAdmin)) {
-//   const user = JSON.parse(json)
-//   user && user.admin ? next() : next({ path: '/' })
-// } else {
-//   next()
-// }
-// })
-
 export default router
