@@ -10,7 +10,7 @@
       >
         <v-col
           cols="12"
-          sm="8"
+          sm="10"
           md="4"
         >
           <v-card class="elevation-12">
@@ -28,22 +28,26 @@
                   v-if="showSignup"
                   label="Nome"
                   type="text"
+                  :rules="nameRules"
                   v-model="user.name"
                 />
                 <v-text-field
                   label="E-mail"
                   type="email"
+                  :rules="emailRules"
                   v-model="user.email"
                 />
                 <v-text-field
                   label="Senha"
                   type="password"
+                  :rules="passwordRules"
                   v-model="user.password"
                 />
                 <v-text-field
                   v-if="showSignup"
                   label="Confirme a senha"
                   type="password"
+                  :rules="passwordRules"
                   v-model="user.confirmPassword"
                 />
               </v-form>
@@ -65,6 +69,7 @@
               <v-btn
                 v-else
                 @click="signin"
+                :disabled="!isValid"
                 color="primary"
               >Entrar</v-btn>
             </v-card-actions>
@@ -90,7 +95,21 @@ export default {
       emailRules: [
         v => !!v || 'E-mail is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+      ],
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => (v && v.length > 10) || 'Name must be longer than 10 characters'
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required',
+        v => (v && v.length > 4) || 'Password must be longer than 4 characters'
       ]
+    }
+  },
+  computed: {
+    isValid () {
+      const user = this.user
+      return (!!user && !!user.email && !!user.password)
     }
   },
   methods: {
@@ -98,7 +117,7 @@ export default {
     signin () {
       this.attemptLogin(this.user)
         .then(user => {
-          this.setSuccess({ message: `Seja Bem-vindo ${user.name}!` })
+          this.setSuccess({ message: `Welcome ${user.name}!` })
           this.$router.push({ path: '/' })
         })
     },

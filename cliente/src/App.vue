@@ -41,8 +41,11 @@
       <v-btn icon>
         <v-icon>mdi-heart</v-icon>
       </v-btn>
-      <v-btn icon>
-        <v-icon @click="logout">mdi-exit-to-app</v-icon>
+      <v-btn
+        icon
+        v-show="isLogged"
+      >
+        <v-icon @click="exit">mdi-exit-to-app</v-icon>
       </v-btn>
     </v-app-bar>
     <v-content>
@@ -73,23 +76,35 @@
 <script>
 import Loading from './components/Loading'
 import SnackBar from './components/SnackBar'
-import { userKey } from './config'
-import { mapState } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'App',
   components: { SnackBar, Loading },
-  computed: { ...mapState(['isMenuVisible', 'user']) },
+  computed: {
+    ...mapGetters(['isLogged'])
+  },
+  created () {
+    this.checkUserToken()
+      .then(user => {
+        this.setSuccess({ message: `Welcome to back ${user.name}!` })
+        this.$router.push({ name: 'Home' })
+      })
+      .catch(e => {
+        this.setWarning({ message: 'You need to login' })
+        this.$router.push({ name: 'Auth' })
+      })
+  },
   data () {
     return {
       drawer: null,
       title: process.env.VUE_APP_TITLE,
-      mode: process.env.VUE_APP_MODE || '',
-      validatingToken: true
+      mode: process.env.VUE_APP_MODE || ''
     }
   },
   methods: {
-    logout () {
-      localStorage.removeItem(userKey)
+    ...mapActions(['logout', 'checkUserToken', 'setWarning', 'setSuccess']),
+    exit () {
+      this.logout()
       this.$router.push({ name: 'Auth' })
     }
   }

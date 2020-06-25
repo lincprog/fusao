@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { isEmpty } from 'lodash'
 import { userKey } from '../config'
 import * as services from '../services'
-import { setToken as httpSetToken } from '../plugins/http'
+import { setToken as httpSetToken, deleteToken } from '../plugins/http'
 
 Vue.use(Vuex)
 
@@ -16,29 +15,17 @@ export default new Vuex.Store({
     loading: false
   },
   mutations: {
-    setToken (state, value) {
+    setToken: (state, value) => {
       state.token = value
     },
-    setLoading (state, { loading }) {
+    setLoading: (state, { loading }) => {
       state.loading = loading
     },
-    setAlert (state, obj) {
+    setAlert: (state, obj) => {
       state.alert = obj
     },
-    setUser (state, obj) {
+    setUser: (state, obj) => {
       state.user = obj
-    },
-    toggleMenu (state, isVisible) {
-      if (!state.user) {
-        state.isMenuVisible = false
-        return
-      }
-
-      if (isVisible === undefined) {
-        state.isMenuVisible = !state.isMenuVisible
-      } else {
-        state.isMenuVisible = isVisible
-      }
     }
   },
   actions: {
@@ -57,7 +44,7 @@ export default new Vuex.Store({
     clearAlert ({ commit }) {
       commit('setAlert', { type: '', message: '' })
     },
-    registerUser ({ dispatch }, payload) {
+    registerUser (payload) {
       return services.postRegister(payload)
         .then(res => res)
     },
@@ -67,39 +54,40 @@ export default new Vuex.Store({
           localStorage.setItem(userKey, JSON.stringify(user))
           const { name, email, token } = user
           commit('setUser', { name, email })
-          dispatch('setToken', token)
+          dispatch('storeToken', token)
           return user
         })
+    },
+    logout ({ commit }) {
+      commit('setUser', {})
+      commit('setToken', null)
+      deleteToken()
+      localStorage.removeItem(userKey)
     },
     setLoading ({ commit }, { loading }) {
       commit('setLoading', { loading })
     },
-    checkUserToken: ({ dispatch, commit, state }) => {
-      if (!isEmpty(state.token)) {
-        return Promise.resolve(state.token)
-      }
+    storeToken ({ commit }, payload) {
+      const token = !payload ? null : payload
+      httpSetToken(token)
+      commit('setToken', token)
+    },
+    checkUserToken ({ dispatch, commit }) {
       const json = localStorage.getItem(userKey)
       const user = JSON.parse(json)
-      if (isEmpty(user) || isEmpty(user.token)) {
-        return Promise.reject(new Error('NO_TOKEN'))
+      if (!user) {
+        return Promise.reject(new Error('NO_USER_TOKEN'))
       }
       const { name, email, token } = user
       commit('setUser', { name, email })
-      dispatch('setToken', token)
-      return Promise.resolve(state.token)
-    },
-    setToken: ({ commit }, payload) => {
-      const token = (isEmpty(payload)) ? null : payload.token
-      httpSetToken(token)
-      commit('setToken', token)
+      dispatch('storeToken', token)
+      return Promise.resolve(user)
     }
   },
   modules: {
   },
   getters: {
-    isLogged: ({ token }) => !isEmpty(token),
+    isLogged: ({ token }) => !!token,
     currentUser: ({ user }) => user
-    // isAuthPage: ({ route }) => route.path.indexOf('/auth') !== -1,
-    // shouldShowNavigation: ({ route }, getters) => (route.path ? !getters.isAuthPage : false)
   }
 })

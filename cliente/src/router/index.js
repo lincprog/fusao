@@ -11,26 +11,22 @@ const routes = [{
 {
   path: '/',
   name: 'Home',
-  component: () => import('../views/Home'),
-  meta: { requiresAuth: true }
-},
-{
-  path: '/empresa',
-  name: 'Empresa',
-  component: () => import('../views/Empresa'),
-  meta: { requiresAuth: true }
+  component: () => import('../views/Home')
 },
 {
   path: '/auth',
   name: 'Auth',
-  component: () => import('../views/Auth'),
-  meta: { requiresAuth: false }
+  component: () => import('../views/Auth')
+},
+{
+  path: '/empresa',
+  name: 'Empresa',
+  component: () => import('../views/Empresa')
 },
 {
   path: '/fusao',
   name: 'fusao',
-  component: () => import('../views/Fusao'),
-  meta: { requiresAuth: true }
+  component: () => import('../views/Fusao')
 }
 ]
 

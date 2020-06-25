@@ -1,16 +1,13 @@
 import store from '../store'
 
-const needAuth = auth => auth === true
+const isAuthRoute = route => route.path.indexOf('/auth') !== -1
+const isLogged = () => store.getters.isLogged
 const beforeEach = (to, from, next) => {
-  const auth = to.meta.requiresAuth
-  console.log('to', to, 'from', from)
-  if (!needAuth(auth)) {
+  if (!isAuthRoute(to) && !isLogged()) {
+    next('/auth')
+  } else {
     next()
-    return
   }
-  store.dispatch('checkUserToken')
-    .then(() => next())
-    .catch(() => next({ name: 'Auth' }))
 }
 
 export default beforeEach

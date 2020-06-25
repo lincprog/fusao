@@ -1,27 +1,30 @@
 import axios from 'axios'
 import { baseApiUrl } from '../config'
 import store from '../store'
-import router from '../router'
+// import router from '../router'
 import { getMessageError } from '../utils'
 
 export const http = axios.create({
   baseURL: baseApiUrl
 })
 
-export function setToken (token) {
+export const setToken = token => {
   http.defaults.headers.common.Authorization = `Bearer ${token}`
+}
+
+export const deleteToken = () => {
+  console.log('deletou token')
+  delete http.defaults.headers.common.Authorization
 }
 
 const success = res => res
 const error = (error) => {
   const { response } = error
   if (response.status === 401) {
-    console.log(router)
-    router.push('/auth')
+    // router.push('/')
   }
   store.dispatch('setError', { message: getMessageError(response.data.message) })
   store.dispatch('setLoading', { loading: false })
-  console.log('err', response)
   return Promise.reject(error)
 }
 
