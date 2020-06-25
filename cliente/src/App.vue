@@ -20,7 +20,7 @@
         </v-list-item>
         <v-list-item link>
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-cog</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Configurações</v-list-item-title>
@@ -35,11 +35,17 @@
       dark
       dense
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon
+        v-show="isLogged"
+        @click.stop="drawer = !drawer"
+      />
       <v-toolbar-title>{{ title + mode }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
+      <v-btn
+        icon
+        to="/"
+      >
+        <v-icon>mdi-home</v-icon>
       </v-btn>
       <v-btn
         icon
@@ -50,17 +56,10 @@
     </v-app-bar>
     <v-content>
       <v-container
-        class="fill-height"
         fluid
+        fill-height
       >
-        <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col cols="12">
-            <router-view />
-          </v-col>
-        </v-row>
+        <router-view />
       </v-container>
     </v-content>
     <v-footer
@@ -90,7 +89,6 @@ export default {
         this.$router.push({ name: 'Home' })
       })
       .catch(e => {
-        this.setWarning({ message: 'You need to login' })
         this.$router.push({ name: 'Auth' })
       })
   },
