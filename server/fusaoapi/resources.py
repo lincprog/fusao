@@ -127,3 +127,19 @@ class Result(Resource):
             return results
         except Exception:
             raise InternalServerError
+
+
+class Analysis:
+    def post(self):
+        try:
+            pass
+        except Exception:
+            raise InternalServerError
+
+
+class Export:
+    def post(self):
+        try:
+            pass
+        except Exception:
+            raise InternalServerError

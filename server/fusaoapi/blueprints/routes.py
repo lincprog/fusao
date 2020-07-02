@@ -4,6 +4,8 @@ from fusaoapi.resources import (
     UserLogout,
     AllUsers,
     Result,
+    Analysis,
+    Export,
 )
 
 
@@ -13,3 +15,5 @@ def init_routes(api):
     api.add_resource(UserLogout, "/logout")
     api.add_resource(AllUsers, "/users")
     api.add_resource(Result, "/name")
+    api.add_resource(Analysis, "/analysis")
+    api.add_resource(Export, "/export")
