@@ -1,0 +1,28 @@
+ 
+[default]
+DEBUG = false
+MONGO_URI="mongodb://localhost:27017/fusao"
+MONGODB_DB = "fusao"
+TITLE = "Fusao APP"
+JWT_SECRET_KEY="fusao"
+EXTENSIONS = [
+    "fusaoapi.ext.auth:init_app",
+    "fusaoapi.ext.database:init_app",
+    "fusaoapi.blueprints:init_app",
+]
+LANGUAGE = "english"
+[default.PLATFORMS]
+reclameaqui = "fusaoapi.crawlers.reclameaqui"
+consumidor = "fusaoapi.crawlers.consumidor"
+
+[development]
+DEBUG = true
+MAIA="FRAZAO"
+
+[testing]
+TEST = true
+MONGO_URI='mongodb://localhost:27017/fusao'
+
+[production]
+PROD = true
+MONGO_URI='mongodb://localhost:27017/fusao'

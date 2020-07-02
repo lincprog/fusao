@@ -13,3 +13,8 @@ class User(db.Document):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+
+class Platform(db.Document):
+    meta = {"collection": "platforms"}
+    name = db.StringField(required=True, max_lenght=50)

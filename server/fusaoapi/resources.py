@@ -10,6 +10,9 @@ from fusaoapi.errors import (
     InternalServerError,
     PasswordError,
 )
+from flask import current_app
+from importlib import import_module
+
 
 parser = reqparse.RequestParser()
 parser.add_argument(
@@ -95,3 +98,32 @@ class AllUsers(Resource):
     @jwt_required
     def delete(self):
         return {"message": "Delete all users"}
+
+
+class Result(Resource):
+    def post(self):
+        try:
+            parser_name = reqparse.RequestParser()
+            parser_name.add_argument(
+                "name",
+                type=str,
+                help="You need to enter Company name",
+                required=True,
+            )
+            parser_name.add_argument(
+                "platforms",
+                action="append",
+                help="You need to enter platforms",
+                required=True,
+            )
+            data = parser_name.parse_args()
+            platforms = data["platforms"]
+            name = data["name"]
+            results = {}
+            pl = current_app.config["PLATFORMS"]
+            for platform in platforms:
+                crawler = import_module(pl[platform])
+                results[platform] = crawler.name(name)
+            return results
+        except Exception:
+            raise InternalServerError

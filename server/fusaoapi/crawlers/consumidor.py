@@ -1,8 +1,13 @@
 import requests
 import json
 from bs4 import BeautifulSoup as bs
+import platform
 
 from selenium import webdriver
+
+chromedriver = (
+    "chromedriver" if platform.system() == "Linux" else "chromedriver.exe"
+)
 
 
 def crawl(parameters):
@@ -12,7 +17,7 @@ def crawl(parameters):
 
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
-    driver = webdriver.Chrome("chromedriver.exe", options=options)
+    driver = webdriver.Chrome(chromedriver, options=options)
 
     driver.get("https://www.consumidor.gov.br/pages/indicador/relatos/abrir")
 
@@ -164,4 +169,4 @@ def name(name):
         map(lambda x: {"title": x["name"], "url": x["url"]}, co_results)
     )
     s.close()
-    return json.dumps(co_names)
+    return co_names

@@ -3,12 +3,17 @@ import time
 from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import platform
 
 import pymongo
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
 col_ra = fusao["reclameaqui"]
+
+chromedriver = (
+    "chromedriver" if platform.system() == "Linux" else "chromedriver.exe"
+)
 
 
 def crawl(parameters):
@@ -28,7 +33,7 @@ def crawl(parameters):
     d = DesiredCapabilities.CHROME
     d["goog:loggingPrefs"] = {"performance": "ALL", "performance": "ALL"}
     driver = webdriver.Chrome(
-        "chromedriver.exe", options=options, desired_capabilities=d
+        chromedriver_path, options=options, desired_capabilities=d
     )
 
     # accessing page and performing interations
@@ -186,7 +191,7 @@ def name(name):
     d = DesiredCapabilities.CHROME
     d["goog:loggingPrefs"] = {"performance": "ALL", "performance": "ALL"}
     driver = webdriver.Chrome(
-        "chromedriver.exe", options=options, desired_capabilities=d
+        chromedriver, options=options, desired_capabilities=d
     )
 
     # access page and perform interations
@@ -221,4 +226,4 @@ def name(name):
     )
 
     driver.close()
-    return json.dumps(json.loads(response["body"])["companies"])
+    return json.loads(response["body"])["companies"]
