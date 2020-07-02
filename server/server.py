@@ -1,9 +1,4 @@
-from flask import (
-    Flask,
-    jsonify,
-    request,
-    send_from_directory,
-)
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import cross_origin
 import pymongo
 import os
@@ -14,25 +9,27 @@ import json
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
-#db_cols = {"columns": fusao["columns"]}
+# db_cols = {"columns": fusao["columns"]}
 
 config = {}
-with open('config.json') as json_file:
+with open("config.json") as json_file:
     config = json.load(json_file)
-    
-for platform in config["platforms"]:
-    exec("import " + platform['crawler'])
 
-#for platform in config['platforms']:
+for platform in config["platforms"]:
+    exec("import " + platform["crawler"])
+
+# for platform in config['platforms']:
 #    db_cols[platform["name"]] = fusao[platform["name"]]
 
 path_server = pathlib.Path(__file__).parent.absolute()
 app = Flask(__name__)
 
+
 @app.route("/")
 @cross_origin()
 def inicio():
     return "Bem vindo a API Fusao"
+
 
 @app.route("/analysis", methods=["POST"])
 @cross_origin()
@@ -47,39 +44,48 @@ def analysis():
         for platform in config["platforms"]:
             if platform["name"] in parameters:
                 results_platform = {}
-                print("Loading data from " + platform["name"] +" ...")
+                print("Loading data from " + platform["name"] + " ...")
                 parameters_platform = parameters[platform["name"]]
-                results_platform = eval('json.loads(' + platform['crawler'] + '.crawl(parameters_platform))')
+                results_platform = eval(
+                    "json.loads("
+                    + platform["crawler"]
+                    + ".crawl(parameters_platform))"
+                )
                 for r in results_platform:
-                    r[platform["dateField"]] = datetime.strptime(r[platform["dateField"]], platform["datePattern"])
-                    #print('updating ' + platform["name"])
-                    db_result = fusao[platform["name"]].update_one(r, {"$set": r}, upsert=True)
-                    #message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
-                    #print(message_jrl)
-                    db_result_id = db_result.raw_result['upserted'] if db_result.raw_result['nModified'] == 0 else fusao[platform["name"]].find_one(r, {"_id":1})["_id"]
-                    fusao["permission"].insert_one({"uid":"user_id", "collection":platform["name"], "rid":db_result_id})
-                
-                consumidor.crawl(
-                    co["nome"], co["dataInicio"], co["dataTermino"]
-                )
-            )
-                ra["id"],
-                ra["qtdPaginas"],
-                ra["qtdItens"],
-                ra["shortname"],
-                ra["pular"],
-            )
-                    r["dataTime"], "%Y-%m-%dT%H:%M:%S"
-                )
+                    r[platform["dateField"]] = datetime.strptime(
+                        r[platform["dateField"]], platform["datePattern"]
+                    )
+                    # print('updating ' + platform["name"])
+                    db_result = fusao[platform["name"]].update_one(
+                        r, {"$set": r}, upsert=True
+                    )
+                    # message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
+                    # print(message_jrl)
+                    db_result_id = (
+                        db_result.raw_result["upserted"]
+                        if db_result.raw_result["nModified"] == 0
+                        else fusao[platform["name"]].find_one(r, {"_id": 1})[
+                            "_id"
+                        ]
+                    )
+                    fusao["permission"].insert_one(
+                        {
+                            "uid": "user_id",
+                            "collection": platform["name"],
+                            "rid": db_result_id,
+                        }
+                    )
 
         # TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
 
         return jsonify({"success": True})
     except Exception as e:
         print(e)
-        return jsonify({"success": False, "status": "Internal Servder Error"}), 500
+        return (
+            jsonify({"success": False, "status": "Internal Servder Error"}),
             500,
         )
+
 
 @app.route("/name", methods=["POST"])
 @cross_origin()
@@ -94,36 +100,24 @@ def name():
         name = parameters["name"]
         platforms = parameters["platforms"]
 
-            co_json = s.post('https://www.consumidor.gov.br/pages/empresa/listarPorNome.json', data={"query": name})
-                "https://www.consumidor.gov.br/pages/empresa/listarPorNome.json",
-                data={"query": name},
-            )
-                    + "/"
-                )
-                soup = bs(co_html.text, "html.parser")
-                co_name = soup.find("div", {"class": "tit-nome"}).text
-                map(lambda x: {"title": x["name"], "url": x["url"]}, co_results)
-            )
-                "https://iosearch.reclameaqui.com.br/raichu-io-site-search-v1/companies/search/"
-                + name_encoded
-            )
-                "https://iosearch.reclameaqui.com.br/raichu-io-site-search-v1/companies/search/"
-                + name_encoded
-            )
-                    "https://www.reclameaqui.com.br/empresa/" + r["shortname"]
-                )
         results = {"success": True}
         for platform in config["platforms"]:
             if platform["name"] in platforms:
-                exec("results[platform['name']] = json.loads(" + platform['crawler'] + ".name(name))")
+                exec(
+                    "results[platform['name']] = json.loads("
+                    + platform["crawler"]
+                    + ".name(name))"
+                )
         return jsonify(results)
     except Exception as e:
         print(e)
+        return (
             jsonify({"success": False, "status": "Internal Server Error"}),
             500,
         )
 
 
+@app.route("/export", methods=["POST"])
 @cross_origin()
 def export():
     try:
@@ -147,14 +141,16 @@ def export():
         for platform in config["platforms"]:
             files.append(platform["name"] + ".csv")
         for file in files:
+            if os.path.exists(os.path.join(path_server, "temp", file)):
+                os.remove(os.path.join(path_server, "temp", file))
 
         for platform in [x["name"] for x in config["platforms"]]:
             if platform in platforms:
                 params = platforms[platform]
-                platform_fields = ",".join(list(map(lambda col_name: fusao["columns"].find_one({"name": col_name}, {platform:1})[platform], columns)))
+                platform_fields = ",".join(
                     list(
                         map(
-                            lambda col_name: col_columns.find_one(
+                            lambda col_name: fusao["columns"].find_one(
                                 {"name": col_name}, {platform: 1}
                             )[platform],
                             columns,
@@ -221,3 +217,4 @@ app.run(debug=True, host="0.0.0.0")
 
 
 # ra_nome = soup.find('div', {'class' :'tit-nome'}).text
+

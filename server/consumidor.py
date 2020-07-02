@@ -1,15 +1,15 @@
-# sudo apt-get install -y selenium chromium-browser flask
 import requests
 import json
 from bs4 import BeautifulSoup as bs
 
 from selenium import webdriver
 
+
 def crawl(parameters):
     fornecedor = parameters["nome"]
     dataInicio = parameters["dataInicio"]
     dataTermino = parameters["dataTermino"]
-    
+
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
     driver = webdriver.Chrome("chromedriver.exe", options=options)
@@ -18,7 +18,6 @@ def crawl(parameters):
 
     injected_javascript = (
         '''
-
     done = arguments[0];
     (({
         palavrasChave = "",
@@ -37,7 +36,6 @@ def crawl(parameters):
     }) => {
             var running = false;
             var csv = "";
-
         window["applicaRelatos"] = (b,a) => {
             if (b) {
                 $("#resultados").html(a);
@@ -65,9 +63,7 @@ def crawl(parameters):
                 else {/*console.log("finalizar!->");*/finalizar();}
                 /*console.log(primeiroProximoIndice);*/
             }
-
         }
-
             window["setDropdown"] = (selector, value) => {
                 const valueIndex = csv=[].slice.call(document.querySelectorAll(`${selector} option`)).filter(e=>e.innerHTML===value)[0].index;
                 document.querySelector(`${selector}`).selectedIndex = valueIndex;
@@ -76,7 +72,6 @@ def crawl(parameters):
             window["setInput"] = (selector, value) => {
                 document.querySelector(`${selector}`).value = value;
             }
-
             dropdownForm = {
                 "#segmentoMercado" : segmentoMercado,
                 "#fornecedor" : fornecedor,
@@ -103,7 +98,6 @@ def crawl(parameters):
             document.querySelector('#btn-pesquisar').click();
             running = true;
             }, 10000);
-
         function finalizar() {
             running = false;
             /*console.log(",-finalizar!");*/
@@ -147,19 +141,27 @@ def crawl(parameters):
 
     return csv
 
+
 def name(name):
     s = requests.Session()
-    co_json = s.post('https://www.consumidor.gov.br/pages/empresa/listarPorNome.json', data={"query": name})
+    co_json = s.post(
+        "https://www.consumidor.gov.br/pages/empresa/listarPorNome.json",
+        data={"query": name},
+    )
     co_results = json.loads(co_json.text)
     for i in co_results:
-        if i["value"]=="-1":
+        if i["value"] == "-1":
             co_results.remove(i)
     for i in co_results:
-        co_html = s.get('https://www.consumidor.gov.br/pages/empresa/'+i['value']+'/')
-        soup = bs(co_html.text, 'html.parser')
-        co_name = soup.find('div', {'class' :'tit-nome'}).text
+        co_html = s.get(
+            "https://www.consumidor.gov.br/pages/empresa/" + i["value"] + "/"
+        )
+        soup = bs(co_html.text, "html.parser")
+        co_name = soup.find("div", {"class": "tit-nome"}).text
         i["name"] = co_name
         i["url"] = co_html.url
-    co_names = list(map(lambda x: {"title": x["name"], "url": x["url"]}, co_results))
+    co_names = list(
+        map(lambda x: {"title": x["name"], "url": x["url"]}, co_results)
+    )
     s.close()
     return json.dumps(co_names)
