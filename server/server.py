@@ -5,37 +5,37 @@ from flask import (
     send_from_directory,
 )
 from flask_cors import cross_origin
-from bs4 import BeautifulSoup as bs
-import urllib
-import urllib.parse
-import json
-import requests
-import consumidor
-import ReclameAqui
 import pymongo
 import os
 import pathlib
 from datetime import datetime
 from subprocess import DEVNULL, STDOUT, check_call
-
-path_server = pathlib.Path(__file__).parent.absolute()
-
+import json
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
-col_co = fusao["consumidor"]
-col_ra = fusao["reclameaqui"]
-col_columns = fusao["columns"]
+#db_cols = {"columns": fusao["columns"]}
 
+config = {}
+with open('config.json') as json_file:
+    config = json.load(json_file)
+    
+for platform in config["platforms"]:
+    exec("import " + platform['crawler'])
+
+#for platform in config['platforms']:
+#    db_cols[platform["name"]] = fusao[platform["name"]]
+
+path_server = pathlib.Path(__file__).parent.absolute()
 app = Flask(__name__)
 
-
 @app.route("/")
+@cross_origin()
 def inicio():
     return "Bem vindo a API Fusao"
 
-
 @app.route("/analysis", methods=["POST"])
+@cross_origin()
 def analysis():
     try:
         if not request.is_json:
@@ -44,44 +44,42 @@ def analysis():
         return jsonify({"success": False, "status": "Bad Request"}), 400
     try:
         parameters = request.get_json()
-
-        if "consumidor" in parameters:
-            print("Loading data from Consumidor.gov.br ...")
-            co = parameters["consumidor"]
-            results_co = json.loads(
+        for platform in config["platforms"]:
+            if platform["name"] in parameters:
+                results_platform = {}
+                print("Loading data from " + platform["name"] +" ...")
+                parameters_platform = parameters[platform["name"]]
+                results_platform = eval('json.loads(' + platform['crawler'] + '.crawl(parameters_platform))')
+                for r in results_platform:
+                    r[platform["dateField"]] = datetime.strptime(r[platform["dateField"]], platform["datePattern"])
+                    #print('updating ' + platform["name"])
+                    db_result = fusao[platform["name"]].update_one(r, {"$set": r}, upsert=True)
+                    #message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
+                    #print(message_jrl)
+                    db_result_id = db_result.raw_result['upserted'] if db_result.raw_result['nModified'] == 0 else fusao[platform["name"]].find_one(r, {"_id":1})["_id"]
+                    fusao["permission"].insert_one({"uid":"user_id", "collection":platform["name"], "rid":db_result_id})
+                
                 consumidor.crawl(
                     co["nome"], co["dataInicio"], co["dataTermino"]
                 )
             )
-            for r in results_co:
-                r["data"] = datetime.strptime(r["data"], "%d/%m/%Y")
-                col_co.update_one(r, {"$set": r}, upsert=True)
-
-        if "reclameaqui" in parameters:
-            print("Loading data from ReclameAQUI.com.br ...")
-            ra = parameters["reclameaqui"]
-            results_ra = ReclameAqui.crawl(
                 ra["id"],
                 ra["qtdPaginas"],
                 ra["qtdItens"],
                 ra["shortname"],
                 ra["pular"],
             )
-            for r in results_ra:
-                r["dataTime"] = datetime.strptime(
                     r["dataTime"], "%Y-%m-%dT%H:%M:%S"
                 )
-                col_ra.update_one(r, {"$set": r}, upsert=True)
 
         # TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
 
         return jsonify({"success": True})
-    except:
-        return (
-            jsonify({"success": False, "status": "Internal Server Error"}),
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "status": "Internal Servder Error"}), 500
             500,
         )
-
 
 @app.route("/name", methods=["POST"])
 @cross_origin()
@@ -96,65 +94,37 @@ def name():
         name = parameters["name"]
         platforms = parameters["platforms"]
 
-        if "consumidor" in platforms:
-            s = requests.Session()
-            co_json = s.post(
+            co_json = s.post('https://www.consumidor.gov.br/pages/empresa/listarPorNome.json', data={"query": name})
                 "https://www.consumidor.gov.br/pages/empresa/listarPorNome.json",
                 data={"query": name},
             )
-            co_results = json.loads(co_json.text)
-            for i in co_results:
-                if i["value"] == "-1":
-                    co_results.remove(i)
-            for i in co_results:
-                co_html = s.get(
-                    "https://www.consumidor.gov.br/pages/empresa/"
-                    + i["value"]
                     + "/"
                 )
                 soup = bs(co_html.text, "html.parser")
                 co_name = soup.find("div", {"class": "tit-nome"}).text
-                i["name"] = co_name
-                i["url"] = co_html.url
-            co_names = list(
                 map(lambda x: {"title": x["name"], "url": x["url"]}, co_results)
             )
-            s.close()
-
-        if "reclameaqui" in platforms:
-            s = requests.Session()
-            name_encoded = urllib.parse.quote(name, safe="")
-            print(
                 "https://iosearch.reclameaqui.com.br/raichu-io-site-search-v1/companies/search/"
                 + name_encoded
             )
-            print(name_encoded)
-            ra_json = s.get(
                 "https://iosearch.reclameaqui.com.br/raichu-io-site-search-v1/companies/search/"
                 + name_encoded
             )
-            print(ra_json.text)
-            ra_results = json.loads(ra_json.text)
-            for r in ra_results["companies"]:
-                r["url"] = (
                     "https://www.reclameaqui.com.br/empresa/" + r["shortname"]
                 )
-            s.close()
-
         results = {"success": True}
-        if "consumidor" in platforms:
-            results["consumidor"] = co_names
-        if "reclameaqui" in platforms:
-            results["reclameaqui"] = ra_results["companies"]
+        for platform in config["platforms"]:
+            if platform["name"] in platforms:
+                exec("results[platform['name']] = json.loads(" + platform['crawler'] + ".name(name))")
         return jsonify(results)
-    except:
-        return (
+    except Exception as e:
+        print(e)
             jsonify({"success": False, "status": "Internal Server Error"}),
             500,
         )
 
 
-@app.route("/export", methods=["POST"])
+@cross_origin()
 def export():
     try:
         if not request.is_json:
@@ -173,14 +143,15 @@ def export():
         )
         query = ""
 
-        for file in ["consumidor.csv", "reclameaqui.csv", "result.csv"]:
-            if os.path.exists(os.path.join(path_server, "temp", file)):
-                os.remove(os.path.join(path_server, "temp", file))
+        files = ["result.csv"]
+        for platform in config["platforms"]:
+            files.append(platform["name"] + ".csv")
+        for file in files:
 
-        for platform in ["consumidor", "reclameaqui"]:
+        for platform in [x["name"] for x in config["platforms"]]:
             if platform in platforms:
                 params = platforms[platform]
-                platform_fields = ",".join(
+                platform_fields = ",".join(list(map(lambda col_name: fusao["columns"].find_one({"name": col_name}, {platform:1})[platform], columns)))
                     list(
                         map(
                             lambda col_name: col_columns.find_one(
@@ -220,7 +191,7 @@ def export():
         ) as result_csv:
             cols = ",".join(columns)
             result_csv.write("platform," + cols + "\n")
-            for filename in ["consumidor", "reclameaqui"]:
+            for filename in [x["name"] for x in config["platforms"]]:
                 if os.path.exists(
                     os.path.join(path_server, "temp", filename + ".csv")
                 ):

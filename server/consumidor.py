@@ -1,9 +1,15 @@
 # sudo apt-get install -y selenium chromium-browser flask
+import requests
+import json
+from bs4 import BeautifulSoup as bs
 
 from selenium import webdriver
 
-
-def crawl(fornecedor, dataInicio, dataTermino):
+def crawl(parameters):
+    fornecedor = parameters["nome"]
+    dataInicio = parameters["dataInicio"]
+    dataTermino = parameters["dataTermino"]
+    
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
     driver = webdriver.Chrome("chromedriver.exe", options=options)
@@ -140,3 +146,20 @@ def crawl(fornecedor, dataInicio, dataTermino):
     driver.quit()
 
     return csv
+
+def name(name):
+    s = requests.Session()
+    co_json = s.post('https://www.consumidor.gov.br/pages/empresa/listarPorNome.json', data={"query": name})
+    co_results = json.loads(co_json.text)
+    for i in co_results:
+        if i["value"]=="-1":
+            co_results.remove(i)
+    for i in co_results:
+        co_html = s.get('https://www.consumidor.gov.br/pages/empresa/'+i['value']+'/')
+        soup = bs(co_html.text, 'html.parser')
+        co_name = soup.find('div', {'class' :'tit-nome'}).text
+        i["name"] = co_name
+        i["url"] = co_html.url
+    co_names = list(map(lambda x: {"title": x["name"], "url": x["url"]}, co_results))
+    s.close()
+    return json.dumps(co_names)
