@@ -7,21 +7,22 @@ from datetime import datetime
 from subprocess import DEVNULL, STDOUT, check_call
 import json
 
+path_server = pathlib.Path(__file__).parent.absolute()
+
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
 # db_cols = {"columns": fusao["columns"]}
 
 config = {}
-with open("config.json") as json_file:
+with open(os.path.join(path_server, "fusaoapi", "crawlers", "config.json")) as json_file:
     config = json.load(json_file)
 
 for platform in config["platforms"]:
-    exec("import " + platform["crawler"])
+    exec( "import fusaoapi.crawlers.{platform} as {platform}".format(platform = platform) )
 
 # for platform in config['platforms']:
-#    db_cols[platform["name"]] = fusao[platform["name"]]
+#    db_cols[platform] = fusao[platform]
 
-path_server = pathlib.Path(__file__).parent.absolute()
 app = Flask(__name__)
 
 
@@ -42,38 +43,42 @@ def analysis():
     try:
         parameters = request.get_json()
         for platform in config["platforms"]:
-            if platform["name"] in parameters:
+            if platform in parameters:
                 results_platform = {}
-                print("Loading data from " + platform["name"] + " ...")
-                parameters_platform = parameters[platform["name"]]
+                print("Loading data from " + platform + " ...")
+                parameters_platform = parameters[platform]
                 results_platform = eval(
                     "json.loads("
-                    + platform["crawler"]
+                    + platform
                     + ".crawl(parameters_platform))"
                 )
                 for r in results_platform:
-                    r[platform["dateField"]] = datetime.strptime(
-                        r[platform["dateField"]], platform["datePattern"]
+                    #r[platform["dateField"]] = datetime.strptime(r[platform["dateField"]], platform["datePattern"])
+                    # print('updating ' + platform)
+                    db_result = fusao[platform].update_one(
+                        {"hash": r["hash"]}, {"$set": r}, upsert=True
                     )
-                    # print('updating ' + platform["name"])
-                    db_result = fusao[platform["name"]].update_one(
-                        r, {"$set": r}, upsert=True
-                    )
-                    # message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
+                    message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
                     # print(message_jrl)
+                    # print(db_result.raw_result)
                     db_result_id = (
                         db_result.raw_result["upserted"]
-                        if db_result.raw_result["nModified"] == 0
-                        else fusao[platform["name"]].find_one(r, {"_id": 1})[
+                        if db_result.raw_result["updatedExisting"] == False
+                        else fusao[platform].find_one(r, {"_id": 1})[
                             "_id"
                         ]
                     )
-                    fusao["permission"].insert_one(
-                        {
-                            "uid": "user_id",
-                            "collection": platform["name"],
-                            "rid": db_result_id,
-                        }
+
+                    obj_permission = {
+                        "uid": "user_id",
+                        "collection": platform,
+                        "rid": db_result_id,
+                    }
+
+                    fusao["permission"].update_one(
+                        obj_permission,
+                        {"$set": obj_permission},
+                        upsert=True
                     )
 
         # TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,7 +87,7 @@ def analysis():
     except Exception as e:
         print(e)
         return (
-            jsonify({"success": False, "status": "Internal Servder Error"}),
+            jsonify({"success": False, "status": "Internal Server Error"}),
             500,
         )
 
@@ -102,10 +107,10 @@ def name():
 
         results = {"success": True}
         for platform in config["platforms"]:
-            if platform["name"] in platforms:
+            if platform in platforms:
                 exec(
-                    "results[platform['name']] = json.loads("
-                    + platform["crawler"]
+                    "results[platform] = json.loads("
+                    + platform
                     + ".name(name))"
                 )
         return jsonify(results)
@@ -139,7 +144,7 @@ def export():
 
         files = ["result.csv"]
         for platform in config["platforms"]:
-            files.append(platform["name"] + ".csv")
+            files.append(platform + ".csv")
         for file in files:
             if os.path.exists(os.path.join(path_server, "temp", file)):
                 os.remove(os.path.join(path_server, "temp", file))

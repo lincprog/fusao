@@ -3,7 +3,11 @@ import time
 from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import os
+import pathlib
+import math
 import platform
+from datetime import datetime
 
 import pymongo
 
@@ -12,7 +16,12 @@ fusao = mongoclient["fusao"]
 col_ra = fusao["reclameaqui"]
 
 chromedriver = (
-    "chromedriver" if platform.system() == "Linux" else "chromedriver.exe"
+    "chromedriver_83"
+    if platform.system() == "Linux"
+    else os.path.join(
+            pathlib.Path(__file__).parent.absolute(),
+            "chromedriver_83.exe",
+        )
 )
 
 
@@ -22,18 +31,20 @@ def crawl(parameters):
     id = parameters["id"]
     name = parameters["name"]
     shortname = parameters["shortname"]
-    pages = parameters["pages"]
-    items_per_page = parameters["items_per_page"]
+    quantity = parameters["quantity"]
     offset = parameters["offset"]
+
+    items_per_page = 50
+    pages = int(math.ceil(quantity/items_per_page))
 
     # Preparing Selenium options and enabling browser logging
     options = webdriver.ChromeOptions()
     options.add_argument("--log-level=3")
-    # options.add_argument('headless')
+    options.add_argument('headless')
     d = DesiredCapabilities.CHROME
-    d["goog:loggingPrefs"] = {"performance": "ALL", "performance": "ALL"}
+    d["goog:loggingPrefs"] = {"performance": "ALL"}
     driver = webdriver.Chrome(
-        chromedriver_path, options=options, desired_capabilities=d
+        executable_path=chromedriver, chrome_options=options, desired_capabilities=d
     )
 
     # accessing page and performing interations
@@ -96,84 +107,37 @@ def crawl(parameters):
         if not col_ra.find({"hash": reclamacao["id"]}).count() > 0:
             # For the lines below, a function can be written for preprocessing.
             # E.g.: to clean the eventual \t's, that can cause malfunctioning cell delimiter, or <br /> etc
-            title = (
-                reclamacao["title"]
-                if "title" in reclamacao.keys() and reclamacao["title"]
-                else "-"
-            )
-            city = (
-                reclamacao["userCity"]
-                if "userCity" in reclamacao.keys() and reclamacao["userCity"]
-                else "-"
-            )
-            state = (
-                reclamacao["userState"]
-                if "userState" in reclamacao.keys() and reclamacao["userState"]
-                else "-"
-            )
-            hash = (
-                reclamacao["id"]
-                if "id" in reclamacao.keys() and reclamacao["id"]
-                else "-"
-            )
-            dataTime = (
-                reclamacao["created"]
-                if "created" in reclamacao.keys() and reclamacao["created"]
-                else "-"
-            )
-            complaint = (
-                reclamacao["description"]
-                if "description" in reclamacao.keys()
-                and reclamacao["description"]
-                else "-"
-            )
-            finalreply = (
-                reclamacao["evaluation"]
-                if "evaluation" in reclamacao.keys()
-                and reclamacao["evaluation"]
-                else "-"
-            )
+            registro = {
+                "title": "title",
+                "city": "userCity",
+                "state": "userState",
+                "hash": "id",
+                "dataTime": "created",
+                "complaint": "description",
+                "finalreply": "evaluation",
+                "wouldbuyagain": "dealAgain",
+                "score": "score"
+                }
+            for key, value in registro.items():
+                registro[key] = reclamacao.get(value, "-")
+            registro["company"] = name
+            registro["dataTime"] = datetime.strptime(registro["dataTime"], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S") # Date in correct format
             # Below, the code for 'status' is based on getStatusComplain function from ReclameAqui's web client
             # Yes, it looks horrible, but the intention here is to expect PRECISELY the same behavior
-            status = "-"
+            registro["status"] = "-"
             if (
                 not reclamacao["evaluated"]
                 and len(reclamacao["interactions"]) > 1
             ):
-                status = "Réplica"
+                registro["status"] = "Réplica"
             elif reclamacao["evaluated"]:
-                status = (
+                registro["status"] = (
                     "Resolvido" if reclamacao["solved"] else "Não resolvido"
                 )
             elif reclamacao["status"] == "ANSWERED":
-                status = "Respondido"
+                registro["status"] = "Respondido"
             elif reclamacao["status"] == "PENDING":
-                status = "Não respondido"
-            wouldBuyAgain = "-"
-            wouldBuyAgain = (
-                reclamacao["dealAgain"]
-                if "dealAgain" in reclamacao.keys()
-                and isinstance(reclamacao["dealAgain"], bool)
-                else "-"
-            )
-            score = (
-                reclamacao["score"]
-                if "score" in reclamacao.keys() and reclamacao["score"]
-                else "-"
-            )
-            registro = {
-                "company": name,
-                "title": title,
-                "city": city,
-                "state": state,
-                "hash": hash,
-                "dataTime": dataTime,
-                "complaint": complaint,
-                "finalreply": finalreply,
-                "status": status,
-                "wouldBuyAgain": wouldBuyAgain,
-                "score": score,
-            }
+                registro["status"] = "Não respondido"
             ra_json.append(registro)
         else:
             print(reclamacao["id"] + " already saved... ")

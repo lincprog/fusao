@@ -1,0 +1,19 @@
+{
+    "db":"fusao2",
+    "platforms": [ "consumidor", "reclameaqui" ],
+    "filters": [
+     {"name":"date","parameters":["from","until"],"available":true},
+     {"name":"score","parameters":["min","max"],"available":false}
+    ],
+    "columns": [
+     {"name":"company","consumidor":"company","reclameaqui":"company"},
+     {"name":"complaint","consumidor":"relato","reclameaqui":"complaint"},
+     {"name":"city","consumidor":"cidade","reclameaqui":"city"},
+     {"name":"companyreply","consumidor":"resposta","reclameaqui":"companyreply"},
+     {"name":"date","consumidor":"data","reclameaqui":"dataTime"},
+     {"name":"evaluation","consumidor":"avaliacao","reclameaqui":"finalReply"},
+     {"name":"score","consumidor":"nota","reclameaqui":"score"},
+     {"name":"id","consumidor":"_id","reclameaqui":"_id"}
+    ],
+    "language": "english"
+   }

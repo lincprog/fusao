@@ -2,24 +2,45 @@ import requests
 import json
 from bs4 import BeautifulSoup as bs
 import platform
+import math
+import os
+import pathlib
+from io import StringIO
+import hashlib
 
 from selenium import webdriver
 
 chromedriver = (
-    "chromedriver" if platform.system() == "Linux" else "chromedriver.exe"
+    "chromedriver_83"
+    if platform.system() == "Linux"
+    else os.path.join(
+            pathlib.Path(__file__).parent.absolute(),
+            "chromedriver_83.exe",
+        )
 )
-
 
 def crawl(parameters):
     fornecedor = parameters["nome"]
-    dataInicio = parameters["dataInicio"]
-    dataTermino = parameters["dataTermino"]
+    dataInicio = parameters.get("dataInicio", "")
+    dataTermino = parameters.get("dataTermino", "")
+    quantity = parameters.get("quantity", None)
+    clicks = (
+        int(math.ceil(quantity/10))
+        if quantity
+        else None
+    )
 
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
-    driver = webdriver.Chrome(chromedriver, options=options)
+    driver = webdriver.Chrome(
+        executable_path=chromedriver, chrome_options=options
+    )
 
     driver.get("https://www.consumidor.gov.br/pages/indicador/relatos/abrir")
+
+    js_parameters = StringIO()
+    py_parameters = {"fornecedor": fornecedor, "dataInicio": dataInicio, "dataTermino": dataTermino, "clicks": clicks}
+    json.dump(py_parameters, js_parameters)
 
     injected_javascript = (
         '''
@@ -37,10 +58,12 @@ def crawl(parameters):
         dataInicio = "",
         dataTermino = "",
         avaliacao = "Selecione",
-        nota = "Selecione"
+        nota = "Selecione",
+        clicks = null
     }) => {
             var running = false;
             var csv = "";
+            var adjust = _=>_.innerText.replace(/[\\t\\n]/g,' ').replace(/[\\\\]/g,'\\\\\\\\').replace(/\\s\\s+/g, ' ').trim()
         window["applicaRelatos"] = (b,a) => {
             if (b) {
                 $("#resultados").html(a);
@@ -62,11 +85,13 @@ def crawl(parameters):
             }
             realcaBusca()
             //FUN PART!
-            /*console.log(b);*/
             if(running){
-                if (!document.querySelector('#btn-mais-resultados').hasAttribute('disabled') && primeiroProximoIndice != '-1') {/*console.log("continuar!");*/document.querySelector("#btn-mais-resultados").click();}
-                else {/*console.log("finalizar!->");*/finalizar();}
-                /*console.log(primeiroProximoIndice);*/
+                if (!document.querySelector('#btn-mais-resultados').hasAttribute('disabled') && primeiroProximoIndice != '-1') {
+                    if (clicks === null) document.querySelector("#btn-mais-resultados").click();
+                    else if (--clicks>0) document.querySelector("#btn-mais-resultados").click();
+                    else finalizar();
+                    }
+                else finalizar();
             }
         }
             window["setDropdown"] = (selector, value) => {
@@ -102,50 +127,51 @@ def crawl(parameters):
             window.setTimeout(()=>{
             document.querySelector('#btn-pesquisar').click();
             running = true;
-            }, 10000);
+            }, 5000);
         function finalizar() {
             running = false;
-            /*console.log(",-finalizar!");*/
-            //csv = [].slice.call(document.querySelectorAll("#resultados > div > div:nth-child(3) > p")).map(e=>e.innerText).join('\\n');
             csv=[].slice.call(document.querySelectorAll("#resultados > div.cartao-relato.conteudoEstatico")).map(e=>{
-                empresa			= e.querySelector("h3[class=relatos-nome-empresa]").innerText.replace(/[\\t\\n]/g,' ').replace(/\\s\\s+/g, ' ').trim();
-                [data, cidade]	= e.querySelector("span[class=relatos-data]").innerText.replace(/[\\t\\n]/g,' ').trim().split(",").map(e=>e.trim());
-                relato			= e.querySelector("div:nth-child(3) > p").innerText.replace(/[\\t\\n]/g,' ').replace(/\\s\\s+/g, ' ').trim();
-                resposta 		= e.querySelector("div:nth-child(4) > p").innerText.replace(/[\\t\\n]/g,' ').replace(/\\s\\s+/g, ' ').trim();
+                empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
+                [predata, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
+                predata = predata.split("/");
+                data = `${predata[2]}-${predata[1]}-${predata[0]}T00:00:00Z`;
+                relato			= adjust(e.querySelector("div:nth-child(3) > p"));
+                resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
                     pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only
                 nota 			= pre_nota === '' ? '-' : pre_nota;
                     pre_avaliacao	= e.querySelector("div:nth-child(5) > p:nth-child(3)");
-                avaliacao		= pre_avaliacao ? pre_avaliacao.innerText.replace(/[\\t\\n]/g,' ').replace(/\\s\\s+/g, ' ').trim() : '-';
+                avaliacao		= pre_avaliacao ? adjust(pre_avaliacao) : '-';
                 
-                //return `${empresa}\\t${data}\\t${cidade}\\t${nota}\\t${relato}\\t${resposta}\\t${avaliacao}`; //`"${relato}"`;
                 return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "data": "${data.replace(/\\"/g, "\\\\\\"")}", "cidade": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
                 
             }).join(',\\n');
-            //console.log("["+csv+"]");
             done("["+csv+"]");
-            /*console.log(csv);*/
         }
         
-        })({
-        fornecedor : "'''
-        + fornecedor
-        + '''",
-        dataInicio : "'''
-        + dataInicio
-        + '''",
-        dataTermino : "'''
-        + dataTermino
-        + """",
-        });
-        """
+        })'''
+        + (
+            '''({entry});
+        '''.format(
+            entry = js_parameters.getvalue()
+            )
+        )
     )
 
     csv = driver.execute_async_script(injected_javascript)
 
     driver.quit()
 
-    return csv
+    # insert hash
+    json_csv = json.loads(csv)
+    for j in json_csv:
+        h = hashlib.md5()
+        h_string = j["company"] + j["data"] + j["cidade"] + j["relato"]
+        h.update(h_string.encode('utf-8'))
+        j["hash"] = h.hexdigest()
+    string_csv = StringIO()
+    json.dump(json_csv, string_csv)
 
+    return string_csv.getvalue()
 
 def name(name):
     s = requests.Session()
