@@ -7,7 +7,6 @@ from datetime import datetime
 from subprocess import DEVNULL, STDOUT, check_call
 import json
 import importlib
-import lib
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
