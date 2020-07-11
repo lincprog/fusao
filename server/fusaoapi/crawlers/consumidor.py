@@ -132,9 +132,9 @@ def crawl(parameters):
             running = false;
             csv=[].slice.call(document.querySelectorAll("#resultados > div.cartao-relato.conteudoEstatico")).map(e=>{
                 empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
-                [predata, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
-                predata = predata.split("/");
-                data = `${predata[2]}-${predata[1]}-${predata[0]}T00:00:00Z`;
+                [predate, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
+                predate = predate.split("/");
+                date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000Z`;
                 relato			= adjust(e.querySelector("div:nth-child(3) > p"));
                 resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
                     pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only
@@ -142,7 +142,7 @@ def crawl(parameters):
                     pre_avaliacao	= e.querySelector("div:nth-child(5) > p:nth-child(3)");
                 avaliacao		= pre_avaliacao ? adjust(pre_avaliacao) : '-';
                 
-                return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "data": "${data.replace(/\\"/g, "\\\\\\"")}", "cidade": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
+                return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "date": "${date.replace(/\\"/g, "\\\\\\"")}", "city": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
                 
             }).join(',\\n');
             done("["+csv+"]");
@@ -165,7 +165,7 @@ def crawl(parameters):
     json_csv = json.loads(csv)
     for j in json_csv:
         h = hashlib.md5()
-        h_string = j["company"] + j["data"] + j["cidade"] + j["relato"]
+        h_string = j["company"] + j["date"] + j["city"] + j["relato"]
         h.update(h_string.encode('utf-8'))
         j["hash"] = h.hexdigest()
     string_csv = StringIO()
