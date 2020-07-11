@@ -1,19 +1,19 @@
 {
-    "db":"fusao2",
-    "platforms": [ "consumidor", "reclameaqui" ],
-    "filters": [
-     {"name":"date","parameters":["from","until"],"available":true},
-     {"name":"score","parameters":["min","max"],"available":false}
-    ],
-    "columns": [
-     {"name":"company","consumidor":"company","reclameaqui":"company"},
-     {"name":"complaint","consumidor":"relato","reclameaqui":"complaint"},
-     {"name":"city","consumidor":"cidade","reclameaqui":"city"},
-     {"name":"companyreply","consumidor":"resposta","reclameaqui":"companyreply"},
-     {"name":"date","consumidor":"data","reclameaqui":"dataTime"},
-     {"name":"evaluation","consumidor":"avaliacao","reclameaqui":"finalReply"},
-     {"name":"score","consumidor":"nota","reclameaqui":"score"},
-     {"name":"id","consumidor":"_id","reclameaqui":"_id"}
-    ],
-    "language": "english"
+    "columns": {
+        "id"        : { "consumidor": "_id"         , "reclameaqui": "_id"            , "type": "str"     },
+        "city"      : { "consumidor": "city"        , "reclameaqui": "city"           , "type": "str"     },
+        "date"      : { "consumidor": "date"        , "reclameaqui": "date"           , "type": "date"    },
+        "message"   : { "consumidor": "relato"      , "reclameaqui": "complaint"      , "type": "str"     },
+        "opinion"   : { "consumidor": "avaliacao"   , "reclameaqui": "finalReply"     , "type": "str"     },
+        "reply"     : { "consumidor": "resposta"    , "reclameaqui": "companyreply"   , "type": "str"     },
+        "score"     : { "consumidor": "nota"        , "reclameaqui": "score"          , "type": "int"     },
+        "theme"     : { "consumidor": "company"     , "reclameaqui": "company"        , "type": "str"     }
+    },
+    "db": "fusao",
+    "filters": {
+        "date"      : { "parameters": [ "$eq", "$lte", "$lt", "$gte", "$gt" ], "available": true },
+        "score"     : { "parameters": [ "$eq", "$lte", "$lt", "$gte", "$gt" ], "available": false }
+    },
+    "language": "english",
+    "platforms": [ "consumidor", "reclameaqui" ]
    }
