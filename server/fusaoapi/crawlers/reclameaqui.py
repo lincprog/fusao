@@ -109,10 +109,8 @@ def crawl(parameters):
             # E.g.: to clean the eventual \t's, that can cause malfunctioning cell delimiter, or <br /> etc
             registro = {
                 "title": "title",
-                "city": "userCity",
-                "state": "userState",
                 "hash": "id",
-                "dataTime": "created",
+                "date": "created",
                 "complaint": "description",
                 "finalreply": "evaluation",
                 "wouldbuyagain": "dealAgain",
@@ -121,7 +119,11 @@ def crawl(parameters):
             for key, value in registro.items():
                 registro[key] = reclamacao.get(value, "-")
             registro["company"] = name
-            registro["dataTime"] = datetime.strptime(registro["dataTime"], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S") # Date in correct format
+            registro["city"] = "{city} - {state}".format(
+                city = reclamacao["userCity"],
+                state = reclamacao["userState"]
+                )
+            registro["date"] = datetime.strptime(registro["date"], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S.000Z") # Date in correct format
             # Below, the code for 'status' is based on getStatusComplain function from ReclameAqui's web client
             # Yes, it looks horrible, but the intention here is to expect PRECISELY the same behavior
             registro["status"] = "-"
@@ -132,7 +134,9 @@ def crawl(parameters):
                 registro["status"] = "Réplica"
             elif reclamacao["evaluated"]:
                 registro["status"] = (
-                    "Resolvido" if reclamacao["solved"] else "Não resolvido"
+                    "Resolvido"
+                    if reclamacao["solved"]
+                    else "Não resolvido"
                 )
             elif reclamacao["status"] == "ANSWERED":
                 registro["status"] = "Respondido"
