@@ -6,25 +6,25 @@ import pathlib
 from datetime import datetime
 from subprocess import DEVNULL, STDOUT, check_call
 import json
+import importlib
+import lib
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
 mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
 fusao = mongoclient["fusao"]
-# db_cols = {"columns": fusao["columns"]}
 
 config = {}
 with open(os.path.join(path_server, "fusaoapi", "crawlers", "config.json")) as json_file:
     config = json.load(json_file)
 
+platform_modules = {}
+
 for platform in config["platforms"]:
-    exec( "import fusaoapi.crawlers.{platform} as {platform}".format(platform = platform) )
-
-# for platform in config['platforms']:
-#    db_cols[platform] = fusao[platform]
-
+    platform_module = importlib.import_module( "fusaoapi.crawlers.{platform}".format(platform = platform) )
+    platform_modules[platform] = platform_module
+ 
 app = Flask(__name__)
-
 
 @app.route("/")
 @cross_origin()
@@ -47,20 +47,13 @@ def analysis():
                 results_platform = {}
                 print("Loading data from " + platform + " ...")
                 parameters_platform = parameters[platform]
-                results_platform = eval(
-                    "json.loads("
-                    + platform
-                    + ".crawl(parameters_platform))"
-                )
+                results_platform = json.loads(platform_modules[platform].crawl(parameters_platform))
                 for r in results_platform:
-                    #r[platform["dateField"]] = datetime.strptime(r[platform["dateField"]], platform["datePattern"])
-                    # print('updating ' + platform)
+                    if "date" in r:
+                        r["date"] = datetime.strptime(r["date"], "%Y-%m-%dT%H:%M:%S.000Z")
                     db_result = fusao[platform].update_one(
                         {"hash": r["hash"]}, {"$set": r}, upsert=True
                     )
-                    message_jrl = "inserido" if db_result.raw_result['nModified'] == 0 else "alterado"
-                    # print(message_jrl)
-                    # print(db_result.raw_result)
                     db_result_id = (
                         db_result.raw_result["upserted"]
                         if db_result.raw_result["updatedExisting"] == False
@@ -108,11 +101,7 @@ def name():
         results = {"success": True}
         for platform in config["platforms"]:
             if platform in platforms:
-                exec(
-                    "results[platform] = json.loads("
-                    + platform
-                    + ".name(name))"
-                )
+                results[platform] = platform_modules[platform].name(name)
         return jsonify(results)
     except Exception as e:
         print(e)
@@ -219,7 +208,3 @@ def export():
 
 
 app.run(debug=True, host="0.0.0.0")
-
-
-# ra_nome = soup.find('div', {'class' :'tit-nome'}).text
-
