@@ -39,6 +39,9 @@ def crawl(parameters):
 
     # Preparing Selenium options and enabling browser logging
     options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_argument("--log-level=3")
     options.add_argument('headless')
     d = DesiredCapabilities.CHROME

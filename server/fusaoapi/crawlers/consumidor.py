@@ -31,6 +31,9 @@ def crawl(parameters):
     )
 
     options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_argument("headless")
     driver = webdriver.Chrome(
         executable_path=chromedriver, chrome_options=options
