@@ -7,6 +7,7 @@ from datetime import datetime
 from subprocess import DEVNULL, STDOUT, check_call
 import json
 import importlib
+import fusionanalysis
 
 path_server = pathlib.Path(__file__).parent.absolute()
 
@@ -34,6 +35,8 @@ def inicio():
 @app.route("/analysis", methods=["POST"])
 @cross_origin()
 def analysis():
+    results_platforms = {}
+    result = {'success': True}
     try:
         if not request.is_json:
             raise Exception()
@@ -47,9 +50,10 @@ def analysis():
                 print("Loading data from " + platform + " ...")
                 parameters_platform = parameters[platform]
                 results_platform = json.loads(platform_modules[platform].crawl(parameters_platform))
+                results_platforms[platform] = results_platform
                 for r in results_platform:
                     if "date" in r:
-                        r["date"] = datetime.strptime(r["date"], "%Y-%m-%dT%H:%M:%S.000Z")
+                        r["date"] = datetime.strptime(r["date"], "%Y-%m-%dT%H:%M:%S.000+00:00")
                     db_result = fusao[platform].update_one(
                         {"hash": r["hash"]}, {"$set": r}, upsert=True
                     )
@@ -73,9 +77,44 @@ def analysis():
                         upsert=True
                     )
 
-        # TODO: ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
+        # ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~
 
-        return jsonify({"success": True})
+        amounts = {}
+        for platform in config["platforms"]:
+            if platform in parameters:
+                amounts[platform] = len( results_platforms[platform] )
+        result["amounts"] = amounts
+
+        states = []
+        for platform in config["platforms"]:
+            if platform in parameters:
+                parameter = fusao['columns'].find_one({'name': 'city'})[platform]
+                states.extend( [ x[parameter] for x in results_platforms[platform] ] )
+        count_states_json = fusionanalysis.count_states( states )
+        count_states = json.loads( count_states_json )
+        result["count_states"] = count_states
+
+        dates = {}
+        count_dates_json = {}
+        count_dates = {}
+        for platform in config["platforms"]:
+            if platform in parameters:
+                parameter = fusao['columns'].find_one({'name': 'date'})[platform]
+                dates[platform] = [ x[parameter] for x in results_platforms[platform] ]
+                count_dates_json[platform] = fusionanalysis.count_months( dates[platform] )
+                count_dates[platform] = json.loads( count_dates_json[platform] )
+        result["count_dates"] = count_dates
+
+        topics = []
+        for platform in config["platforms"]:
+            if platform in parameters:
+                parameter = fusao['columns'].find_one({'name': 'complaint'})[platform]
+                topics.extend( [ x[parameter] for x in results_platforms[platform] ] )
+        topics_found_json = fusionanalysis.topics( topics )
+        topics_found = json.loads( topics_found_json )
+        result["topics"] = topics_found
+
+        return jsonify(result)
     except Exception as e:
         print(e)
         return (
