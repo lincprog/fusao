@@ -7,16 +7,17 @@ import os
 import pathlib
 from io import StringIO
 import hashlib
-
 from selenium import webdriver
 
 chromedriver = (
-    "chromedriver_83"
-    if platform.system() == "Linux"
-    else os.path.join(
+    os.path.join(
             pathlib.Path(__file__).parent.absolute(),
-            "chromedriver_83.exe",
-        )
+            (
+                    "chromedriver_83"
+                    if platform.system() == "Linux"
+                    else "chromedriver_83.exe"
+            )
+    )
 )
 
 def crawl(parameters):
@@ -31,6 +32,8 @@ def crawl(parameters):
     )
 
     options = webdriver.ChromeOptions()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--ignore-ssl-errors')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -137,7 +140,7 @@ def crawl(parameters):
                 empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
                 [predate, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
                 predate = predate.split("/");
-                date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000Z`;
+                date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000+00:00`;
                 relato			= adjust(e.querySelector("div:nth-child(3) > p"));
                 resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
                     pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only

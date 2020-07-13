@@ -9,21 +9,16 @@ import math
 import platform
 from datetime import datetime
 
-import pymongo
-
-mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
-fusao = mongoclient["fusao"]
-col_ra = fusao["reclameaqui"]
-
 chromedriver = (
-    "chromedriver_83"
-    if platform.system() == "Linux"
-    else os.path.join(
+    os.path.join(
             pathlib.Path(__file__).parent.absolute(),
-            "chromedriver_83.exe",
-        )
+            (
+                    "chromedriver_83"
+                    if platform.system() == "Linux"
+                    else "chromedriver_83.exe"
+            )
+    )
 )
-
 
 def crawl(parameters):
 
@@ -39,6 +34,8 @@ def crawl(parameters):
 
     # Preparing Selenium options and enabling browser logging
     options = webdriver.ChromeOptions()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--ignore-ssl-errors')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -106,48 +103,45 @@ def crawl(parameters):
 
     # structuring valid data
     ra_json = []
-    for reclamacao in reclamacoes:
-        if not col_ra.find({"hash": reclamacao["id"]}).count() > 0:
-            # For the lines below, a function can be written for preprocessing.
-            # E.g.: to clean the eventual \t's, that can cause malfunctioning cell delimiter, or <br /> etc
-            registro = {
-                "title": "title",
-                "hash": "id",
-                "date": "created",
-                "complaint": "description",
-                "finalreply": "evaluation",
-                "wouldbuyagain": "dealAgain",
-                "score": "score"
-                }
-            for key, value in registro.items():
-                registro[key] = reclamacao.get(value, "-")
-            registro["company"] = name
-            registro["city"] = "{city} - {state}".format(
-                city = reclamacao["userCity"],
-                state = reclamacao["userState"]
-                )
-            registro["date"] = datetime.strptime(registro["date"], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S.000Z") # Date in correct format
-            # Below, the code for 'status' is based on getStatusComplain function from ReclameAqui's web client
-            # Yes, it looks horrible, but the intention here is to expect PRECISELY the same behavior
-            registro["status"] = "-"
-            if (
-                not reclamacao["evaluated"]
-                and len(reclamacao["interactions"]) > 1
-            ):
-                registro["status"] = "Réplica"
-            elif reclamacao["evaluated"]:
-                registro["status"] = (
-                    "Resolvido"
-                    if reclamacao["solved"]
-                    else "Não resolvido"
-                )
-            elif reclamacao["status"] == "ANSWERED":
-                registro["status"] = "Respondido"
-            elif reclamacao["status"] == "PENDING":
-                registro["status"] = "Não respondido"
-            ra_json.append(registro)
-        else:
-            print(reclamacao["id"] + " already saved... ")
+    for reclamacao in reclamacoes: #if not col_ra.find({"hash": reclamacao["id"]}).count() > 0:
+        # For the lines below, a function can be written for preprocessing.
+        # E.g.: to clean the eventual \t's, that can cause malfunctioning cell delimiter, or <br /> etc
+        registro = {
+            "title": "title",
+            "hash": "id",
+            "date": "created",
+            "complaint": "description",
+            "finalreply": "evaluation",
+            "wouldbuyagain": "dealAgain",
+            "score": "score"
+            }
+        for key, value in registro.items():
+            registro[key] = reclamacao.get(value, "-")
+        registro["company"] = name
+        registro["city"] = "{city} - {state}".format(
+            city = reclamacao["userCity"],
+            state = reclamacao["userState"]
+            )
+        registro["date"] = datetime.strptime(registro["date"], "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S.000+00:00") # Date in correct format
+        # Below, the code for 'status' is based on getStatusComplain function from ReclameAqui's web client
+        # Yes, it looks horrible, but the intention here is to expect PRECISELY the same behavior
+        registro["status"] = "-"
+        if (
+            not reclamacao["evaluated"]
+            and len(reclamacao["interactions"]) > 1
+        ):
+            registro["status"] = "Réplica"
+        elif reclamacao["evaluated"]:
+            registro["status"] = (
+                "Resolvido"
+                if reclamacao["solved"]
+                else "Não resolvido"
+            )
+        elif reclamacao["status"] == "ANSWERED":
+            registro["status"] = "Respondido"
+        elif reclamacao["status"] == "PENDING":
+            registro["status"] = "Não respondido"
+        ra_json.append(registro)
 
     driver.close()
     return json.dumps(ra_json)
@@ -155,7 +149,11 @@ def crawl(parameters):
 
 def name(name):
     options = webdriver.ChromeOptions()
-    options.add_argument("--log-level=3")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_argument("headless")
 
     # enable browser logging
