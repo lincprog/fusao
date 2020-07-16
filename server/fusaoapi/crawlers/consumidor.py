@@ -8,6 +8,9 @@ import pathlib
 from io import StringIO
 import hashlib
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 chromedriver = (
     os.path.join(
@@ -50,120 +53,160 @@ def crawl(parameters):
 
     injected_javascript = (
         '''
-    done = arguments[0];
-    (({
-        palavrasChave = "",
-        segmentoMercado = "Selecione",
-        fornecedor = "Selecione",
-        area = "Selecione",
-        assunto = "Selecione",
-        problema = "Selecione",
-        regiao = "Selecione",
-        uf = "Selecione",
-        cidade = "Selecione",
-        dataInicio = "",
-        dataTermino = "",
-        avaliacao = "Selecione",
-        nota = "Selecione",
-        clicks = null
-    }) => {
-            var running = false;
-            var csv = "";
-            var adjust = _=>_.innerText.replace(/[\\t\\n]/g,' ').replace(/[\\\\]/g,'\\\\\\\\').replace(/\\s\\s+/g, ' ').trim()
-        window["applicaRelatos"] = (b,a) => {
-            if (b) {
-                $("#resultados").html(a);
-                scrollToAnchor($(".dropdown-toggle"));
-                $('[data-toggle="dropdown"]').parent().removeClass("open")
-            } else {
-                $("#resultados").append(a)
-            }
-            if (primeiroProximoIndice < 0) {
-                $("#btn-mais-resultados").attr("disabled", "disabled");
-                if (b) {
-                    $("#btn-mais-resultados").addClass("hidden");
-                    geraContador()
-                }
-            } else {
-                $("#btn-mais-resultados").removeAttr("disabled");
-                $("#btn-mais-resultados").removeClass("hidden");
-                geraContador()
-            }
-            realcaBusca()
-            //FUN PART!
-            if(running){
-                if (!document.querySelector('#btn-mais-resultados').hasAttribute('disabled') && primeiroProximoIndice != '-1') {
-                    if (clicks === null) document.querySelector("#btn-mais-resultados").click();
-                    else if (--clicks>0) document.querySelector("#btn-mais-resultados").click();
-                    else finalizar();
+        done = arguments[0];
+        (({
+            palavrasChave = "",
+            segmentoMercado = "Selecione",
+            fornecedor = "Selecione",
+            area = "Selecione",
+            assunto = "Selecione",
+            problema = "Selecione",
+            regiao = "Selecione",
+            uf = "Selecione",
+            cidade = "Selecione",
+            dataInicio = "",
+            dataTermino = "",
+            avaliacao = "Selecione",
+            nota = "Selecione",
+            clicks = null
+        }) => {
+                var running = false;
+                var csv = "";
+                var adjust = _=>_.innerText.replace(/[\\t\\n]/g,' ').replace(/[\\\\]/g,'\\\\\\\\').replace(/\\s\\s+/g, ' ').trim()
+                window["applicaRelatos"] = (b,a) => {
+                    if (b) {
+                        $("#resultados").html(a);
+                        scrollToAnchor($(".dropdown-toggle"));
+                        $('[data-toggle="dropdown"]').parent().removeClass("open")
+                    } else {
+                        $("#resultados").append(a)
                     }
-                else finalizar();
-            }
-        }
-            window["setDropdown"] = (selector, value) => {
-                const valueIndex = csv=[].slice.call(document.querySelectorAll(`${selector} option`)).filter(e=>e.innerHTML===value)[0].index;
-                document.querySelector(`${selector}`).selectedIndex = valueIndex;
-            }
-            
-            window["setInput"] = (selector, value) => {
-                document.querySelector(`${selector}`).value = value;
-            }
-            dropdownForm = {
-                "#segmentoMercado" : segmentoMercado,
-                "#fornecedor" : fornecedor,
-                "#area" : area,
-                "#assunto" : assunto,
-                "#problema" : problema,
-                "#regiao" : regiao,
-                "#uf" : uf,
-                "#cidade" : cidade,
-                "#avaliacao" : avaliacao,
-                "#nota" : nota
-            };
-            
-            inputForm = {
-                "#palavrasChave" : palavrasChave,
-            "#dataInicio" : dataInicio,
-            "#dataTermino" : dataTermino
-            };
-            
-            for (key in dropdownForm) setDropdown(key, dropdownForm[key]);
-            for (key in inputForm) setInput(key, inputForm[key]);
-        
-            window.setTimeout(()=>{
-            document.querySelector('#btn-pesquisar').click();
-            running = true;
-            }, 5000);
-        function finalizar() {
-            running = false;
-            csv=[].slice.call(document.querySelectorAll("#resultados > div.cartao-relato.conteudoEstatico")).map(e=>{
-                empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
-                [predate, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
-                predate = predate.split("/");
-                date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000+00:00`;
-                relato			= adjust(e.querySelector("div:nth-child(3) > p"));
-                resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
-                    pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only
-                nota 			= pre_nota === '' ? '-' : pre_nota;
-                    pre_avaliacao	= e.querySelector("div:nth-child(5) > p:nth-child(3)");
-                avaliacao		= pre_avaliacao ? adjust(pre_avaliacao) : '-';
+                    if (primeiroProximoIndice < 0) {
+                        $("#btn-mais-resultados").attr("disabled", "disabled");
+                        if (b) {
+                            $("#btn-mais-resultados").addClass("hidden");
+                            geraContador()
+                        }
+                    } else {
+                        $("#btn-mais-resultados").removeAttr("disabled");
+                        $("#btn-mais-resultados").removeClass("hidden");
+                        geraContador()
+                    }
+                    realcaBusca()
+                    //FUN PART!
+                    if(running){
+                            done();
+                            if (!document.querySelector('#btn-mais-resultados').hasAttribute('disabled') && primeiroProximoIndice != '-1') {
+                                if (clicks === null) document.querySelector("#btn-mais-resultados").click();
+                                else if (--clicks>0) {document.querySelector("#btn-mais-resultados").click();console.log(clicks);}
+                                else informaFim();//finalizar();
+                                }
+                            else informaFim();//finalizar();
+                        }
+                }
+                window["informaFim"] = () =>{
+                    console.log('informaFim!')
+                    document.body.innerHTML+='<div id="informaFim" style="display:none"></div>'
+                }
+                window["setDropdown"] = (selector, value) => {
+                    const valueIndex = csv=[].slice.call(document.querySelectorAll(`${selector} option`)).filter(e=>e.innerHTML===value)[0].index;
+                    document.querySelector(`${selector}`).selectedIndex = valueIndex;
+                }
                 
-                return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "date": "${date.replace(/\\"/g, "\\\\\\"")}", "city": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
+                window["setInput"] = (selector, value) => {
+                    document.querySelector(`${selector}`).value = value;
+                }
+                dropdownForm = {
+                    "#segmentoMercado" : segmentoMercado,
+                    "#fornecedor" : fornecedor,
+                    "#area" : area,
+                    "#assunto" : assunto,
+                    "#problema" : problema,
+                    "#regiao" : regiao,
+                    "#uf" : uf,
+                    "#cidade" : cidade,
+                    "#avaliacao" : avaliacao,
+                    "#nota" : nota
+                };
                 
-            }).join(',\\n');
-            done("["+csv+"]");
-        }
-        
-        })'''
-        + (
+                inputForm = {
+                    "#palavrasChave" : palavrasChave,
+                "#dataInicio" : dataInicio,
+                "#dataTermino" : dataTermino
+                };
+                
+                for (key in dropdownForm) setDropdown(key, dropdownForm[key]);
+                for (key in inputForm) setInput(key, inputForm[key]);
+            
+                window.setTimeout(()=>{
+                document.querySelector('#btn-pesquisar').click();
+                running = true;
+                }, 5000);
+                function finalizar() {
+                    running = false;
+                    csv=[].slice.call(document.querySelectorAll("#resultados > div.cartao-relato.conteudoEstatico")).map(e=>{
+                        empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
+                        [predate, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
+                        predate = predate.split("/");
+                        date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000+00:00`;
+                        relato			= adjust(e.querySelector("div:nth-child(3) > p"));
+                        resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
+                            pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only
+                        nota 			= pre_nota === '' ? '-' : pre_nota;
+                            pre_avaliacao	= e.querySelector("div:nth-child(5) > p:nth-child(3)");
+                        avaliacao		= pre_avaliacao ? adjust(pre_avaliacao) : '-';
+                        
+                        return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "date": "${date.replace(/\\"/g, "\\\\\\"")}", "city": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
+                        
+                    }).join(',\\n');
+                    done("["+csv+"]");
+                }
+        })
+        '''
+        +(
             '''({entry});
-        '''.format(
-            entry = js_parameters.getvalue()
+            '''.format(
+                entry = js_parameters.getvalue()
             )
         )
     )
+    started = driver.execute_async_script(injected_javascript)
+    element = WebDriverWait(
+        driver,
+        ( ( clicks * 3) + 30)
+    ).until(
+        EC.presence_of_element_located((By.ID, "informaFim"))
+    )
 
-    csv = driver.execute_async_script(injected_javascript)
+    final_javascript = '''
+    (()=>{
+        done = arguments[0];
+        var csv = "";
+        var adjust = _=>_.innerText.replace(/[\\t\\n]/g,' ').replace(/[\\\\]/g,'\\\\\\\\').replace(/\\s\\s+/g, ' ').trim()
+        function finalizar() {
+        running = false;
+        csv=[].slice.call(document.querySelectorAll("#resultados > div.cartao-relato.conteudoEstatico")).map(e=>{
+            empresa			= adjust(e.querySelector("h3[class=relatos-nome-empresa]"));
+            [predate, cidade]	= adjust(e.querySelector("span[class=relatos-data]")).split(",").map(e=>e.trim());
+            predate = predate.split("/");
+            date = `${predate[2]}-${predate[1]}-${predate[0]}T00:00:00.000+00:00`;
+            relato			= adjust(e.querySelector("div:nth-child(3) > p"));
+            resposta 		= adjust(e.querySelector("div:nth-child(4) > p"));
+                pre_nota		= e.querySelector("div:nth-child(5) > p:nth-child(2)").innerText.replace(/\\D/g,'').trim(); // digits only
+            nota 			= pre_nota === '' ? '-' : pre_nota;
+                pre_avaliacao	= e.querySelector("div:nth-child(5) > p:nth-child(3)");
+            avaliacao		= pre_avaliacao ? adjust(pre_avaliacao) : '-';
+            
+            return `{"company": "${empresa.replace(/\\"/g, "\\\\\\"")}", "date": "${date.replace(/\\"/g, "\\\\\\"")}", "city": "${cidade.replace(/\\"/g, "\\\\\\"")}", "nota": "${nota.replace(/\\"/g, "\\\\\\"")}", "relato": "${relato.replace(/\\"/g, "\\\\\\"")}", "resposta": "${resposta.replace(/\\"/g, "\\\\\\"")}", "avaliacao": "${avaliacao.replace(/\\"/g, "\\\\\\"")}"}`;
+            
+        }).join(',\\n');
+        done("["+csv+"]");
+        }
+        finalizar();
+    })()
+    '''
+
+    csv = driver.execute_async_script(final_javascript)
 
     driver.quit()
 
