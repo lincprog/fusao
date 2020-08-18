@@ -27,9 +27,9 @@ def crawl(parameters):
     name = parameters["name"]
     shortname = parameters["shortname"]
     quantity = parameters["quantity"]
-    offset = parameters["offset"]
+    offset = parameters.get("offset", 0)
 
-    items_per_page = 50
+    items_per_page = 10
     pages = int(math.ceil(quantity/items_per_page))
 
     # Preparing Selenium options and enabling browser logging
@@ -45,6 +45,13 @@ def crawl(parameters):
     d["goog:loggingPrefs"] = {"performance": "ALL"}
     driver = webdriver.Chrome(
         executable_path=chromedriver, chrome_options=options, desired_capabilities=d
+    )
+
+    driver.execute_cdp_cmd(
+            "Network.enable", {
+            "maxResourceBufferSize": (1024 * 1204 * 1024),
+            "maxTotalBufferSize": (1024 * 1204 * 1024),
+        }
     )
 
     # accessing page and performing interations
@@ -144,7 +151,7 @@ def crawl(parameters):
         ra_json.append(registro)
 
     driver.close()
-    return json.dumps(ra_json)
+    return ra_json
 
 
 def name(name):

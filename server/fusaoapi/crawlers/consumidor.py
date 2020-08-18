@@ -24,7 +24,7 @@ chromedriver = (
 )
 
 def crawl(parameters):
-    fornecedor = parameters["nome"]
+    fornecedor = parameters["title"]
     dataInicio = parameters.get("dataInicio", "")
     dataTermino = parameters.get("dataTermino", "")
     quantity = parameters.get("quantity", None)
@@ -220,7 +220,9 @@ def crawl(parameters):
     string_csv = StringIO()
     json.dump(json_csv, string_csv)
 
-    return string_csv.getvalue()
+    result_value = string_csv.getvalue()
+
+    return json.loads( result_value )
 
 def name(name):
     s = requests.Session()
