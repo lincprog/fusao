@@ -12,7 +12,7 @@
       <Panel title="Resultados para empresa Americanas 04/19 ate 04/20" color="primary" :dark="true" :dense="true">
         <v-container class="grey lighten-5">
           <v-row>
-            <v-col cols="3">
+            <v-col cols="6">
               <v-card
                 class="pa-2"
                 outlined
@@ -22,17 +22,7 @@
               <BarChart :chartData="bardata" :options="options"/>
               </v-card>
             </v-col>
-            <v-col cols="4">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-              >
-              <v-card-subtitle>Reclamações por plataforma durante o periodo </v-card-subtitle>
-              <HorizontalBarChart :chartData="horizontaldata" :options="options"/>
-              </v-card>
-            </v-col>
-            <v-col cols="5">
+            <v-col cols="6">
               <v-card
                 class="pa-2"
                 outlined
@@ -44,16 +34,6 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="6">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-              >
-              <v-card-subtitle>Mapa de Calor</v-card-subtitle>
-              <BubbleChart :chartData="bubbledata" :options="options" />
-              </v-card>
-            </v-col>
             <v-col cols="3">
               <v-card
                 class="pa-2"
@@ -61,7 +41,7 @@
                 tile
               >
               <v-card-subtitle>Reclame Aqui </v-card-subtitle>
-              <DoughnutChart :chartData="doughnutdata" :options="options"/>
+              <DoughnutChart :chartData="bardata" :options="options"/>
               </v-card>
             </v-col>
             <v-col cols="3">
@@ -74,41 +54,8 @@
               <PieChart :chartData="piedata" :options="options" />
               </v-card>
             </v-col>
-            <v-col cols="4">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-              >
-              <v-card-subtitle>Quantidade de reclamações por plataforma </v-card-subtitle>
-              <PolarAreaChart :chartData="polardata" :options="options" />
-              </v-card>
-            </v-col>
-            <v-col cols="4">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-              >
-              <v-card-subtitle>Quantidade de reclamações por plataforma </v-card-subtitle>
-              <RadarChart :chartData="radardata" :options="options" />
-              </v-card>
-            </v-col>
-            <v-col cols="4">
-              <v-card
-                class="pa-2"
-                outlined
-                tile
-              >
-              <v-card-subtitle>Quantidade de reclamações por plataforma </v-card-subtitle>
-              <ScatterChart :chartData="scatterdata" :options="options" />
-              </v-card>
-            </v-col>
             <v-col cols="6">
-              <map-chart :dados="mapaReclame" color="orange" titulo="Reclame Aqui"/>
-            </v-col>
-            <v-col cols="6">
-              <map-chart :dados="mapaConsumidor" color="cyan" titulo="Consumidor"/>
+              <map-chart v-if="mapChart.length" :dados="mapChart" color="orange" titulo="Mapa de Calor"/>
             </v-col>
           </v-row>
         </v-container>
@@ -118,16 +65,18 @@
 </template>
 
 <script>
+
+import axios from 'axios'
 import Panel from '../components/Panel'
 import BarChart from '../components/charts/BarChart'
-import BubbleChart from '../components/charts/BubbleChart'
+// import BubbleChart from '../components/charts/BubbleChart'
 import DoughnutChart from '../components/charts/DoughnutChart'
-import HorizontalBarChart from '../components/charts/HorizontalBarChart'
+// import HorizontalBarChart from '../components/charts/HorizontalBarChart'
 import LineChart from '../components/charts/LineChart'
 import PieChart from '../components/charts/PieChart'
-import PolarAreaChart from '../components/charts/PolarAreaChart'
-import RadarChart from '../components/charts/RadarChart'
-import ScatterChart from '../components/charts/ScatterChart'
+// import PolarAreaChart from '../components/charts/PolarAreaChart'
+// import RadarChart from '../components/charts/RadarChart'
+// import ScatterChart from '../components/charts/ScatterChart'
 import MapChart from '../components/charts/MapChart'
 
 const meses = ['Maio/19', 'Junho/19', 'Julho/19', 'Agost/19', 'Setembro/19', 'Outubro/19', 'Novembro/19', 'Dezembro/19', 'Janeiro/20', 'Fevereiro/20', 'Março/20', 'Abril/20']
@@ -150,18 +99,17 @@ export default {
   components: {
     Panel,
     BarChart,
-    BubbleChart,
     DoughnutChart,
-    HorizontalBarChart,
     LineChart,
     PieChart,
-    PolarAreaChart,
-    RadarChart,
-    ScatterChart,
     MapChart
   },
   data () {
     return {
+      cores: {
+        consumidor: '#41B883',
+        reclameaqui: '#E46651'
+      },
       doughnutdata: {
         labels: ['Resolvido', 'Nao Resolvido'],
         datasets: [
@@ -405,27 +353,16 @@ export default {
         ]
       },
       linedata: {
-        labels: [...meses],
-        datasets: [
-          {
-            label: 'Reclame Aqui',
-            backgroundColor: '#41B883',
-            data: [12, 16, 55, 22, 23, 87, 34, 12, 98, 43, 15, 63]
-          },
-          {
-            label: 'Consumidor.gov',
-            backgroundColor: '#E46651',
-            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-          }
-        ]
+        labels: [],
+        datasets: []
       },
       bardata: {
-        labels: ['Reclame Aqui', 'Consumidor.gov'],
+        labels: [],
         datasets: [
           {
             label: 'Quantidade',
-            backgroundColor: '#f87979',
-            data: [1326, 1178]
+            backgroundColor: '#41B883',
+            data: []
           }
         ]
       },
@@ -444,104 +381,11 @@ export default {
           }
         ]
       },
-      polardata: {
-        labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
-        datasets: [
-          {
-            label: 'My First dataset',
-            backgroundColor: 'rgba(179,181,198,0.2)',
-            pointBackgroundColor: 'rgba(179,181,198,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(179,181,198,1)',
-            data: [65, 59, 90, 81, 56, 55, 40]
-          },
-          {
-            label: 'My Second dataset',
-            backgroundColor: 'rgba(255,99,132,0.2)',
-            pointBackgroundColor: 'rgba(255,99,132,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(255,99,132,1)',
-            data: [28, 48, 40, 19, 96, 27, 100]
-          }
-        ]
-      },
-      radardata: {
-        labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
-        datasets: [
-          {
-            label: 'My First dataset',
-            backgroundColor: 'rgba(179,181,198,0.2)',
-            borderColor: 'rgba(179,181,198,1)',
-            pointBackgroundColor: 'rgba(179,181,198,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(179,181,198,1)',
-            data: [65, 59, 90, 81, 56, 55, 40]
-          },
-          {
-            label: 'My Second dataset',
-            backgroundColor: 'rgba(255,99,132,0.2)',
-            borderColor: 'rgba(255,99,132,1)',
-            pointBackgroundColor: 'rgba(255,99,132,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(255,99,132,1)',
-            data: [28, 48, 40, 19, 96, 27, 100]
-          }
-        ]
-      },
-      scatterdata: {
-        datasets: [{
-          label: 'Reclame Aqui',
-          fill: false,
-          borderColor: '#f87979',
-          backgroundColor: '#f87979',
-          data: [{
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }]
-        },
-        {
-          label: 'Consumidor.gov.br',
-          fill: false,
-          borderColor: '#7acbf9',
-          backgroundColor: '#7acbf9',
-          data: [{
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }, {
-            x: getRandomArbitrary(),
-            y: getRandomArbitrary()
-          }]
-        }]
-      },
       options: {
         responsive: true,
         maintainAspectRatio: false
       },
+      mapChart: [],
       mapaReclame: [
         ['br-sp', getRandomArbitrary()],
         ['br-ma', getRandomArbitrary()],
@@ -570,44 +414,89 @@ export default {
         ['br-df', getRandomArbitrary()],
         ['br-ac', getRandomArbitrary()],
         ['br-ro', getRandomArbitrary()]
-      ],
-      mapaConsumidor: [
-        ['br-sp', getRandomArbitrary()],
-        ['br-ma', getRandomArbitrary()],
-        ['br-pa', getRandomArbitrary()],
-        ['br-sc', getRandomArbitrary()],
-        ['br-ba', getRandomArbitrary()],
-        ['br-ap', getRandomArbitrary()],
-        ['br-ms', getRandomArbitrary()],
-        ['br-mg', getRandomArbitrary()],
-        ['br-go', getRandomArbitrary()],
-        ['br-rs', getRandomArbitrary()],
-        ['br-to', getRandomArbitrary()],
-        ['br-pi', getRandomArbitrary()],
-        ['br-al', getRandomArbitrary()],
-        ['br-pb', getRandomArbitrary()],
-        ['br-ce', getRandomArbitrary()],
-        ['br-se', getRandomArbitrary()],
-        ['br-rr', getRandomArbitrary()],
-        ['br-pe', getRandomArbitrary()],
-        ['br-pr', getRandomArbitrary()],
-        ['br-es', getRandomArbitrary()],
-        ['br-rj', getRandomArbitrary()],
-        ['br-rn', getRandomArbitrary()],
-        ['br-am', getRandomArbitrary()],
-        ['br-mt', getRandomArbitrary()],
-        ['br-df', getRandomArbitrary()],
-        ['br-ac', getRandomArbitrary()],
-        ['br-ro', getRandomArbitrary()]]
+      ]
     }
   },
-  mounted () {
+  created () {
+    this.buscar()
   },
   methods: {
+    buscar () {
+      axios.get('./analysis.json')
+        .then(response => response.data)
+        .then(data => {
+          console.log(data)
+          const amounts = data.amounts
+          const countStates = data.count_states
+          const countDates = data.count_dates
+          // , count_dates, count_states, sentiments, topics
+          this.montaBarData(amounts)
+          this.montaMapChart(countStates)
+          this.montaLineData(countDates)
+        }).catch(e => console.log('ERRO:', e))
+    },
+    montaBarData (amounts) {
+      const barData = { ...this.bardata }
+      for (const key in amounts) {
+        const element = amounts[key]
+        barData.labels.push(key)
+        barData.datasets[0].data.push(element)
+      }
+      this.bardata = { ...barData }
+    },
+    montaMapChart (countStates) {
+      const mapChart = [...this.mapChart]
+      for (const key in countStates) {
+        const qtd = countStates[key]
+        const state = [`br-${key}`.toLowerCase(), qtd]
+        mapChart.push(state)
+      }
+      this.mapChart = [...mapChart]
+    },
+    montaLineData (countDates) {
+      const datas2018 = ['4/2018', '5/2018', '6/2018', '7/2018', '8/2018', '9/2018', '10/2018', '11/2018', '12/2018']
+      const datas2019 = ['1/2019', '2/2019', '3/2019', '4/2019', '5/2019', '6/2019', '7/2019', '8/2019', '9/2019', '10/2019', '11/2019', '12/2019']
+      const datas2020 = ['1/2020', '2/2020', '3/2020', '4/2020', '5/2020', '6/2020', '7/2020']
+      const meses = new Set([...datas2018, ...datas2019, ...datas2020])
+      // console.log('meses antes', meses)
+      // for (const plataforma in countDates) {
+      //   for (const data in countDates[plataforma]) {
+      //     meses.add(data)
+      //   }
+      // }
+      // console.log('meses depois', meses)
+      const lineData = { ...this.linedata }
+      lineData.labels = [...meses]
+      for (const plataforma in countDates) {
+        const amostragem = []
+        for (const data of meses) {
+          if (data in countDates[plataforma]) {
+            amostragem.push(countDates[plataforma][data])
+          } else {
+            amostragem.push(0)
+          }
+        }
+        const dataSet = { label: plataforma, data: [...amostragem], backgroundColor: this.cores[plataforma] }
+        lineData.datasets.push(dataSet)
+      }
+      console.log('lineData', lineData)
+      this.linedata = { ...lineData }
+    }
   }
 }
 </script>
-
-<style>
-
-</style>
+linedata: {
+        labels: [...meses],
+        datasets: [
+          {
+            label: 'Reclame Aqui',
+            backgroundColor: '#41B883',
+            data: [12, 16, 55, 22, 23, 87, 34, 12, 98, 43, 15, 63]
+          },
+          {
+            label: 'Consumidor.gov',
+            backgroundColor: '#E46651',
+            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
+          }
+        ]
+      }

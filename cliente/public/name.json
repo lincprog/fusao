@@ -1,0 +1,391 @@
+{
+    "consumidor": [
+        {
+            "title": "Americanas Viagens",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001411/perfil"
+        },
+        {
+            "title": "Americanas.com",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001407/perfil"
+        },
+        {
+            "title": "Cartão Americanas.com",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20150203000053006/perfil"
+        },
+        {
+            "title": "Financeira Itaú Americanas",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001214/perfil"
+        },
+        {
+            "title": "Lojas Americanas",
+            "url": "https://www.consumidor.gov.br/pages/empresa/20140206000001402/perfil"
+        }
+    ],
+    "reclameaqui": [
+        {
+            "companyName": "Americanas Marketplace",
+            "count": 78122,
+            "created": "2020-03-24T17:50:04",
+            "fantasyName": "Americanas Marketplace",
+            "finalScore": "7.5",
+            "hasVerificada": false,
+            "id": "97826",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/company_142ed4d8-665f-4124-b401-796783e932a7.png",
+            "shortname": "americanas-marketplace",
+            "solvedPercentual": "82.5",
+            "status": "GOOD"
+        },
+        {
+            "companyName": "americanas - Loja Online",
+            "count": 20516,
+            "created": "2020-04-23T08:27:00",
+            "fantasyName": "americanas - Loja Online",
+            "finalScore": "8.5",
+            "hasVerificada": false,
+            "id": "6446",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/logo_americanas-com-loja-online_AbTWm9.png",
+            "shortname": "americanas-com-loja-online",
+            "solvedPercentual": "91.3",
+            "status": "RA1000"
+        },
+        {
+            "companyName": "Americanas - Loja Física",
+            "count": 2395,
+            "created": "2020-04-30T21:23:13",
+            "fantasyName": "Americanas - Loja Física",
+            "finalScore": "8.7",
+            "hasVerificada": false,
+            "id": "31900",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/logo_lojas-americanas-loja-fisica_fahdkZ.png",
+            "shortname": "lojas-americanas-loja-fisica",
+            "solvedPercentual": "91.4",
+            "status": "RA1000"
+        },
+        {
+            "companyName": "Cartão americanas",
+            "count": 472,
+            "created": "2020-05-04T10:10:52",
+            "fantasyName": "Cartão americanas",
+            "finalScore": "9.1",
+            "hasVerificada": false,
+            "id": "88701",
+            "logo": "https://raichu-uploads.s3.amazonaws.com/logo_null_qb6PoQ.png",
+            "shortname": "cartao-americanas-com",
+            "solvedPercentual": "93.6",
+            "status": "RA1000"
+        },
+        {
+            "companyName": "Americanas- Ship from Store Lojas Físicas",
+            "count": 397,
+            "created": "2020-07-30T07:58:48",
+            "fantasyName": "Americanas- Ship from Store Lojas Físicas",
+            "finalScore": "7.4",
+            "hasVerificada": false,
+            "id": "456586",
+            "shortname": "lojas-americanas-lojas-fisicas-ship-from-store",
+            "solvedPercentual": "75.5",
+            "status": "GOOD"
+        },
+        {
+            "companyName": "Panamericanas",
+            "count": 6,
+            "created": "2019-02-13T14:26:21",
+            "fantasyName": "Panamericanas",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "28555",
+            "shortname": "panamericanas",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Óticas Americanas",
+            "count": 5,
+            "created": "2019-07-01T10:00:35",
+            "fantasyName": "Óticas Americanas",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "5NLQ0QXLmQNryr7H",
+            "shortname": "oticas-americanas",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Mudanças Americanas",
+            "count": 1,
+            "created": "2020-04-13T15:02:58",
+            "fantasyName": "Mudanças Americanas",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "1Ir6vmBGq36jMMfF",
+            "shortname": "mudancas-americanas",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Replicas Americanas - Goophone",
+            "count": 12,
+            "created": "2019-02-13T14:27:58",
+            "fantasyName": "Replicas Americanas - Goophone",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "k20mXlRNKTnHOkqt",
+            "shortname": "replicas-americanas-goophone",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "Americanas Grife",
+            "count": 0,
+            "created": "2019-02-13T14:32:32",
+            "fantasyName": "Americanas Grife",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "21928",
+            "shortname": "americanas-grife",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Cincor -Americanas",
+            "count": 0,
+            "created": "2019-02-13T14:30:46",
+            "fantasyName": "Cincor -Americanas",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "74533",
+            "shortname": "cincor-americanas",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Americanas Viagens",
+            "count": 0,
+            "created": "2019-02-13T14:27:11",
+            "fantasyName": "Americanas Viagens",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "14808",
+            "shortname": "americanas-viagens",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Sul Frame - Construções Americanas",
+            "count": 0,
+            "created": "2019-02-13T14:08:13",
+            "fantasyName": "Sul Frame - Construções Americanas",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "_Hr7USmyU-eY0_W-",
+            "shortname": "sul-frame-construcoes-americanas",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Tecnicas Americanas de Estudo para o Brasil",
+            "count": 0,
+            "created": "2019-02-13T14:31:02",
+            "fantasyName": "Tecnicas Americanas de Estudo para o Brasil",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "2531",
+            "shortname": "tecnicas-americanas-de-estudo-para-o-brasil",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Transportadora Americana",
+            "count": 180,
+            "created": "2019-02-13T14:12:15",
+            "fantasyName": "Transportadora Americana",
+            "finalScore": "8.1",
+            "hasVerificada": false,
+            "id": "410",
+            "shortname": "transportadora-americana",
+            "solvedPercentual": "94.6",
+            "status": "GREAT"
+        },
+        {
+            "companyName": "Carro Americana.com.br",
+            "count": 98,
+            "created": "2020-08-06T13:01:28",
+            "fantasyName": "Carro Americana.com.br",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "43362",
+            "shortname": "carro-americana-com-br",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "www.americanadigital.com.br",
+            "count": 54,
+            "created": "2019-10-22T11:48:56",
+            "fantasyName": "www.americanadigital.com.br",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "12697",
+            "shortname": "www-americanadigital-com-br",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "Faculdade Integração Americana-FAINAM (FIA)",
+            "count": 26,
+            "created": "2020-08-06T12:58:23",
+            "fantasyName": "Faculdade Integração Americana-FAINAM (FIA)",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "41764",
+            "shortname": "faculdade-integracao-americana-fainam-fia",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "Secad - Artmed Panamericana Editora",
+            "count": 38,
+            "created": "2019-02-13T14:28:26",
+            "fantasyName": "Secad - Artmed Panamericana Editora",
+            "finalScore": "6.9",
+            "hasVerificada": false,
+            "id": "68180",
+            "shortname": "artmed-panamericana-editora",
+            "solvedPercentual": "70.0",
+            "status": "REGULAR"
+        },
+        {
+            "companyName": "Serralheria Tecnotubo - Americana-SP",
+            "count": 0,
+            "created": "2020-04-02T08:03:35",
+            "fantasyName": "Serralheria Tecnotubo - Americana-SP",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "8_x8D5IMhvJfkhb6",
+            "shortname": "serralheria-tecnotubo-americana-sp",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Americansat Networks",
+            "count": 0,
+            "created": "2019-02-13T14:25:36",
+            "fantasyName": "Americansat Networks",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "92526",
+            "shortname": "americansat-networks",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "FAM - FACULDADE DE AMERICANA",
+            "count": 21,
+            "created": "2019-02-13T14:25:27",
+            "fantasyName": "FAM - FACULDADE DE AMERICANA",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "9654",
+            "shortname": "fam-faculdade-de-americana",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "São Lucas Saúde - Americana",
+            "count": 18,
+            "created": "2019-02-13T14:26:55",
+            "fantasyName": "São Lucas Saúde - Americana",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "14475",
+            "shortname": "sao-lucas-saude-americana",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Sociedade Latino Americana de Coaching",
+            "count": 11,
+            "created": "2019-02-13T14:18:02",
+            "fantasyName": "Sociedade Latino Americana de Coaching",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "103173",
+            "shortname": "sociedade-latino-americana-de-coaching",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "DAE - Departamento de Água e Esgoto de Americana",
+            "count": 15,
+            "created": "2020-08-06T12:19:36",
+            "fantasyName": "DAE - Departamento de Água e Esgoto de Americana",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "31053",
+            "shortname": "dae-departamento-de-agua-e-esgoto-de-americana",
+            "solvedPercentual": "--",
+            "status": "NOT_RECOMMENDED"
+        },
+        {
+            "companyName": "Autocar - Americana, SP (Acessorios para Carros)",
+            "count": 0,
+            "created": "2020-05-26T14:48:57",
+            "fantasyName": "Autocar - Americana, SP (Acessorios para Carros)",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "489942",
+            "shortname": "autocar-americana-sp-acessorios-para-carros",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Atlanta Hotel - Americana, SP (Hoteis)",
+            "count": 0,
+            "created": "2020-05-26T14:19:24",
+            "fantasyName": "Atlanta Hotel - Americana, SP (Hoteis)",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "488850",
+            "shortname": "atlanta-hotel-americana-sp-hoteis",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Sou Americana",
+            "count": 3,
+            "created": "2019-09-12T16:04:56",
+            "fantasyName": "Sou Americana",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "9_h6BCcHfGinqNl5",
+            "shortname": "sou-americana",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Drogaria Americana ",
+            "count": 2,
+            "created": "2019-02-13T14:07:19",
+            "fantasyName": "Drogaria Americana ",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "RkoprbQ5VEe3ixtt",
+            "shortname": "drogaria-americana",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        },
+        {
+            "companyName": "Prefeitura - Americana",
+            "count": 5,
+            "created": "2020-07-09T22:50:45",
+            "fantasyName": "Prefeitura - Americana",
+            "finalScore": "--",
+            "hasVerificada": false,
+            "id": "689270",
+            "shortname": "prefeitura-americana",
+            "solvedPercentual": "--",
+            "status": "NO_INDEX"
+        }
+    ],
+    "success": true
+}
