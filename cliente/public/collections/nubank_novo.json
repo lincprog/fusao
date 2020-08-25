@@ -1,0 +1,160 @@
+{
+    "amounts": {
+        "consumidor": 987,
+        "reclameaqui": 19270
+    },
+    "count_dates": {
+        "consumidor": {
+            "Agosto/2020": 78,
+            "Julho/2020": 342,
+            "Junho/2020": 297,
+            "Maio/2020": 270
+        },
+        "reclameaqui": {
+            "Agosto/2020": 9376,
+            "Julho/2020": 9894
+        }
+    },
+    "count_states": {
+        "--": 19,
+        "AC": 23,
+        "AL": 127,
+        "AM": 66,
+        "AP": 27,
+        "BA": 1108,
+        "CE": 432,
+        "DF": 409,
+        "ES": 327,
+        "GO": 377,
+        "MA": 170,
+        "MG": 2282,
+        "MS": 95,
+        "MT": 111,
+        "PA": 187,
+        "PB": 164,
+        "PE": 568,
+        "PI": 133,
+        "PR": 767,
+        "RJ": 2883,
+        "RN": 190,
+        "RO": 44,
+        "RR": 20,
+        "RS": 794,
+        "SC": 433,
+        "SE": 118,
+        "SP": 8346,
+        "TO": 35,
+        "ne": 1,
+        "ta": 1
+    },
+    "sentiments": {
+        "negative": 704,
+        "negative_medium": 752,
+        "neutral": 17316,
+        "positive": 953,
+        "positive_medium": 532
+    },
+    "success": true,
+    "topics": [
+        {
+            "word_cloud": {
+                "acommktplace acommktplace": 1,
+                "agora": 0.17647058823529413,
+                "americana": 0.5294117647058824,
+                "ate": 0.11764705882352941,
+                "calotas": 0.23529411764705882,
+                "compra": 0.17647058823529413,
+                "comprei": 0.7647058823529411,
+                "daddario": 0.23529411764705882,
+                "dinheiro": 0.17647058823529413,
+                "emblemas vw": 0.23529411764705882,
+                "encordoamento": 0.35294117647058826,
+                "entrege": 0.11764705882352941,
+                "itens": 0.17647058823529413,
+                "numero": 0.17647058823529413,
+                "pedido": 0.7058823529411765,
+                "produto": 0.29411764705882354,
+                "produto chegou": 0.23529411764705882,
+                "veio": 0.5882352941176471,
+                "vendido": 0.17647058823529413,
+                "violao": 0.23529411764705882
+            },
+            "words": "violao scanner nestle pista broca fou alicate atenden entrege vw calotas emblemas seu edicao ampliador abusurdo damos cadastradas corda estampa"
+        },
+        {
+            "word_cloud": {
+                "agoo pedido": 1,
+                "ainda": 0.14285714285714285,
+                "caminho": 0.2857142857142857,
+                "codigo": 0.14285714285714285,
+                "comprei": 0.42857142857142855,
+                "consigo": 0.21428571428571427,
+                "dia": 0.21428571428571427,
+                "em": 0.21428571428571427,
+                "empresa": 0.14285714285714285,
+                "endereco": 0.21428571428571427,
+                "entregue": 0.5714285714285714,
+                "fiz": 0.21428571428571427,
+                "nada": 0.21428571428571427,
+                "nota": 0.2857142857142857,
+                "pagamento": 0.21428571428571427,
+                "pedido transferencia": 0.6428571428571429,
+                "produto": 0.2857142857142857,
+                "transferencia filiais": 0.42857142857142855,
+                "transportadoraqua": 0.21428571428571427,
+                "veio": 0.14285714285714285
+            },
+            "words": "canecas pula toalha barros compressao amortecedor roupao transportemai covide julo esquadrias aprovadomai recebidomai em extratora frozen nude totalr tabela ch"
+        },
+        {
+            "word_cloud": {
+                "agora": 0.42906234658811976,
+                "ainda": 0.405252822778596,
+                "assim": 0.3699067255768287,
+                "cartao credito": 0.5238095238095238,
+                "empresa": 0.7253313696612665,
+                "entrar contato": 0.4170348551791851,
+                "entrei contato": 0.6880216003927344,
+                "fiz compra": 0.9116347569955817,
+                "lojas americana": 0.8365243004418262,
+                "nada": 0.3701521845851743,
+                "nota fiscal": 0.36794305351006384,
+                "numero pedido": 0.3900343642611684,
+                "poi": 0.8279332351497299,
+                "porem": 0.6256750122729504,
+                "porque": 0.4177712322042219,
+                "quot": 0.7771232204221895,
+                "realizei compra": 0.36696121747668137,
+                "reclame aqui": 0.3541973490427099,
+                "sendo": 0.4162984781541483,
+                "site americana": 1
+            },
+            "words": "dia produto pedido americanas compra site comprei entrega recebi fiz contato valor loja quero dias empresa porem cartao entregue nada"
+        },
+        {
+            "word_cloud": {
+                "americanas": 0.5,
+                "chegou": 0.3333333333333333,
+                "comprei": 0.9166666666666666,
+                "credito": 0.16666666666666666,
+                "dia": 0.25,
+                "dinheiro": 0.25,
+                "goma": 0.4166666666666667,
+                "gummy hair": 0.3333333333333333,
+                "intituicao": 0.16666666666666666,
+                "kit": 0.3333333333333333,
+                "muinto": 0.16666666666666666,
+                "nome": 0.25,
+                "pedido": 0.3333333333333333,
+                "produto": 1,
+                "quero": 0.4166666666666667,
+                "recebi": 0.25,
+                "sabor": 0.25,
+                "site": 0.3333333333333333,
+                "veio": 0.4166666666666667,
+                "volta": 0.3333333333333333
+            },
+            "words": "hair gummy chinelo gomas moedor solda sandalia vitaminas whey sabor protein cinto vitamin aquario amperes jujubas camisas chaveada apagada coloridas"
+        }
+    ]
+}

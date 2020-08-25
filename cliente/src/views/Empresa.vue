@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     buscar () {
-      axios.get('./name.json')
+      axios.get('./collections/name.json')
         .then(response => response.data)
         .then(data => {
           this.resultado = data
