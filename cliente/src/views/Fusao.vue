@@ -45,7 +45,26 @@
               </v-card>
             </v-col>
             <v-col cols="6">
-              <map-chart v-if="mapChart.length" :dados="mapChart" color="orange" titulo="Mapa de Calor"/>
+              <map-chart v-if="mapData.length" :dados="mapData" color="orange" titulo="Mapa de Calor"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="topicsData.length">
+            <v-col cols="6" v-for="(topic,index) in topicsData" :key="index">
+              <v-card
+                class="pa-2"
+                outlined
+                tile
+              >
+              <v-card-title>Tópicos</v-card-title>
+              <v-card-subtitle>Palavras: {{ topic.words }}</v-card-subtitle>
+              <wordcloud
+                :data="topic.wordCloud"
+                nameKey="palavra"
+                valueKey="quantidade"
+                :color="myColors"
+                :showTooltip="true">
+                </wordcloud>
+              </v-card>
             </v-col>
           </v-row>
         </v-container>
@@ -61,10 +80,8 @@ import Panel from '../components/Panel'
 import BarChart from '../components/charts/BarChart'
 import DoughnutChart from '../components/charts/DoughnutChart'
 import LineChart from '../components/charts/LineChart'
-// import PieChart from '../components/charts/PieChart'
 import MapChart from '../components/charts/MapChart'
-
-const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+import wordcloud from 'vue-wordcloud'
 
 export default {
   name: 'Fusao',
@@ -73,10 +90,20 @@ export default {
     BarChart,
     DoughnutChart,
     LineChart,
-    MapChart
+    MapChart,
+    wordcloud
   },
   data () {
     return {
+      myColors: ['#1f77b4', '#629fc9', '#94bedb', '#c9e0ef'],
+      defaultWords: [{
+        name: 'Cat',
+        value: 26
+      },
+      {
+        name: 'fish',
+        value: 19
+      }],
       legenda: {
         negative_medium: 'Mais Negativo',
         negative: 'Negativo',
@@ -115,12 +142,12 @@ export default {
         responsive: true,
         maintainAspectRatio: false
       },
-      mapChart: []
+      mapData: [],
+      topicsData: []
     }
   },
   created () {
     this.buscar()
-    console.log(meses)
   },
   methods: {
     buscar () {
@@ -132,12 +159,26 @@ export default {
           const countStates = data.count_states
           const countDates = data.count_dates
           const sentiments = data.sentiments
-          // , count_dates, count_states, sentiments, topics
+          const topics = data.topics
           this.montaBarData(amounts)
           this.montaMapChart(countStates)
           this.montaLineData(countDates)
           this.montaPieData(sentiments)
+          this.montaWordCloud(topics)
         }).catch(e => console.log('ERRO:', e))
+    },
+    montaWordCloud (topics) {
+      const topicsData = topics.map(topic => {
+        const wordCloud = []
+        for (const keyWord in topic.word_cloud) {
+          const quantidade = parseInt(topic.word_cloud[keyWord] * 100)
+          const word = { palavra: keyWord, quantidade }
+          wordCloud.push(word)
+        }
+        return { wordCloud, words: topic.words }
+      })
+      console.log(topicsData)
+      this.topicsData = [...topicsData]
     },
     montaPieData (sentiments) {
       const pieData = { ...this.piedata }
@@ -159,13 +200,13 @@ export default {
       this.bardata = { ...barData }
     },
     montaMapChart (countStates) {
-      const mapChart = [...this.mapChart]
+      const mapData = [...this.mapData]
       for (const key in countStates) {
         const qtd = countStates[key]
         const state = [`br-${key}`.toLowerCase(), qtd]
-        mapChart.push(state)
+        mapData.push(state)
       }
-      this.mapChart = [...mapChart]
+      this.mapData = [...mapData]
     },
     montaLineData (countDates) {
       const datas2018 = ['Abril/2018', 'Maio/2018', 'Junho/2018', 'Julho/2018', 'Agosto/2018', 'Setembro/2018', 'Outubro/2018', 'Novembro/2018', 'Dezembro/2018']
